@@ -1,0 +1,426 @@
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
+
+/* RTL Support for Arabic */
+html[dir="rtl"] {
+    direction: rtl;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    direction: rtl;
+}
+
+/* Basic RTL fixes */
+.fi-sidebar {
+    right: 0;
+    left: auto;
+}
+
+.fi-main {
+    margin-right: 16rem;
+    margin-left: 0;
+}
+
+/* Text alignment */
+.fi-sidebar-nav-item-label,
+.fi-ta-text,
+.fi-fo-field-wrp-label {
+    text-align: right;
+}
+
+/* Fix form inputs */
+input, textarea, select {
+    text-align: right;
+}
+
+/* Fix numeric inputs to be LTR */
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="email"] {
+    direction: ltr;
+    text-align: left;
+}
+
+/* Fix sidebar for RTL */
+.fi-sidebar {
+    right: 0;
+    left: auto;
+}
+
+/* Fix navigation items */
+.fi-sidebar-nav-item {
+    text-align: right;
+}
+
+/* Fix form layouts */
+.fi-fo-field-wrp {
+    text-align: right;
+}
+
+/* Fix table headers */
+.fi-ta-header-cell {
+    text-align: right;
+}
+
+/* Fix buttons alignment */
+.fi-btn {
+    text-align: center;
+}
+
+/* Fix modal positioning */
+.fi-modal {
+    direction: rtl;
+}
+
+/* Fix dropdown menus */
+.fi-dropdown-list {
+    text-align: right;
+}
+
+/* Custom Arabic font improvements */
+.fi-sidebar-nav-item-label,
+.fi-ta-text,
+.fi-fo-field-wrp-label,
+.fi-btn-label {
+    font-weight: 500;
+    letter-spacing: 0.025em;
+}
+
+/* Fix pagination */
+.fi-pagination {
+    direction: ltr;
+}
+
+/* Fix search input */
+.fi-global-search-field {
+    text-align: right;
+}
+
+/* Fix breadcrumbs */
+.fi-breadcrumbs {
+    direction: rtl;
+}
+
+/* Fix notifications */
+.fi-notification {
+    text-align: right;
+}
+
+/* Custom colors for Arabic interface */
+.fi-sidebar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.fi-sidebar-nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Fix form sections */
+.fi-section {
+    text-align: right;
+}
+
+/* Fix table actions */
+.fi-ta-actions {
+    justify-content: flex-start;
+}
+
+/* Fix file upload */
+.fi-fo-file-upload {
+    text-align: center;
+}
+
+/* Fix select dropdown */
+.fi-select-input {
+    text-align: right;
+}
+
+/* Fix checkbox and radio alignment */
+.fi-checkbox,
+.fi-radio {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+/* Fix toggle switch */
+.fi-toggle {
+    direction: ltr;
+}
+
+/* Fix date picker */
+.fi-datetime-input {
+    direction: ltr;
+}
+
+/* Fix numeric inputs */
+input[type="number"] {
+    direction: ltr;
+    text-align: left;
+}
+
+/* Fix URL and email inputs */
+input[type="url"],
+input[type="email"] {
+    direction: ltr;
+    text-align: left;
+}
+
+/* Fix password input */
+input[type="password"] {
+    direction: ltr;
+    text-align: left;
+}
+
+/* Fix code blocks */
+pre,
+code {
+    direction: ltr;
+    text-align: left;
+}
+
+/* Fix JSON display */
+.fi-json-editor {
+    direction: ltr;
+    text-align: left;
+}
+
+/* Fix markdown editor */
+.fi-markdown-editor {
+    direction: rtl;
+}
+
+.fi-markdown-editor .CodeMirror {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Fix rich text editor */
+.fi-rich-editor {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Fix key-value pairs */
+.fi-key-value {
+    direction: rtl;
+}
+
+/* Fix repeater */
+.fi-repeater {
+    direction: rtl;
+}
+
+/* Fix builder */
+.fi-builder {
+    direction: rtl;
+}
+
+/* Fix wizard steps */
+.fi-wizard-step {
+    text-align: center;
+}
+
+/* Fix tabs */
+.fi-tabs {
+    direction: rtl;
+}
+
+/* Fix accordion */
+.fi-accordion {
+    direction: rtl;
+}
+
+/* Fix split layout */
+.fi-split {
+    direction: rtl;
+}
+
+/* Fix grid layout */
+.fi-grid {
+    direction: rtl;
+}
+
+/* Fix fieldset */
+.fi-fieldset {
+    direction: rtl;
+}
+
+/* Fix placeholder text */
+::placeholder {
+    text-align: right;
+    opacity: 0.6;
+}
+
+/* Fix loading spinner */
+.fi-spinner {
+    direction: ltr;
+}
+
+/* Fix progress bar */
+.fi-progress {
+    direction: ltr;
+}
+
+/* Fix badge positioning */
+.fi-badge {
+    direction: ltr;
+}
+
+/* Fix avatar */
+.fi-avatar {
+    direction: ltr;
+}
+
+/* Fix icon positioning */
+.fi-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Fix tooltip */
+.fi-tooltip {
+    direction: rtl;
+}
+
+/* Fix popover */
+.fi-popover {
+    direction: rtl;
+}
+
+/* Fix modal header */
+.fi-modal-header {
+    text-align: right;
+}
+
+/* Fix modal footer */
+.fi-modal-footer {
+    justify-content: flex-start;
+}
+
+/* Fix slide over */
+.fi-slide-over {
+    direction: rtl;
+}
+
+/* Fix command palette */
+.fi-command-palette {
+    direction: rtl;
+}
+
+/* Fix global search */
+.fi-global-search {
+    direction: rtl;
+}
+
+/* Fix user menu */
+.fi-user-menu {
+    direction: rtl;
+}
+
+/* Fix theme switcher */
+.fi-theme-switcher {
+    direction: ltr;
+}
+
+/* Fix database notifications */
+.fi-database-notifications {
+    direction: rtl;
+}
+
+/* Fix tenant switcher */
+.fi-tenant-switcher {
+    direction: rtl;
+}
+
+/* Fix language switcher */
+.fi-language-switcher {
+    direction: rtl;
+}
+
+/* Fix resource navigation */
+.fi-resource-nav {
+    direction: rtl;
+}
+
+/* Fix relation manager */
+.fi-relation-manager {
+    direction: rtl;
+}
+
+/* Fix widget */
+.fi-widget {
+    direction: rtl;
+}
+
+/* Fix chart */
+.fi-chart {
+    direction: ltr;
+}
+
+/* Fix stats */
+.fi-stats {
+    direction: rtl;
+}
+
+/* Fix info list */
+.fi-info-list {
+    direction: rtl;
+}
+
+/* Fix key-value list */
+.fi-key-value-list {
+    direction: rtl;
+}
+
+/* Fix timeline */
+.fi-timeline {
+    direction: rtl;
+}
+
+/* Fix kanban */
+.fi-kanban {
+    direction: rtl;
+}
+
+/* Fix calendar */
+.fi-calendar {
+    direction: rtl;
+}
+
+/* Fix map */
+.fi-map {
+    direction: ltr;
+}
+
+/* Fix color picker */
+.fi-color-picker {
+    direction: ltr;
+}
+
+/* Fix range slider */
+.fi-range-slider {
+    direction: ltr;
+}
+
+/* Fix rating */
+.fi-rating {
+    direction: ltr;
+}
+
+/* Fix signature pad */
+.fi-signature-pad {
+    direction: ltr;
+}
+
+/* Fix barcode scanner */
+.fi-barcode-scanner {
+    direction: ltr;
+}
+
+/* Fix QR code */
+.fi-qr-code {
+    direction: ltr;
+}
