@@ -129,7 +129,7 @@ class BookingResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('المبلغ الإجمالي')
-                    ->money('SAR')
+                    ->money('YR')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_paid')
                     ->label('مدفوع')

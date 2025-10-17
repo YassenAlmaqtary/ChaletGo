@@ -22,25 +22,25 @@ class RefundController extends Controller
     public function processRefund(Request $request, int $paymentId): JsonResponse
     {
         $user = Auth::guard('api')->user();
-        
+
         $payment = Payment::with(['booking.chalet', 'booking.customer'])->find($paymentId);
-        
+
         if (!$payment) {
             return $this->notFoundResponse('المدفوعة غير موجودة');
         }
 
         // Check permissions
-        if (!$this->canRefund($user, $payment)) {
+        if ($this->canRefund($user, $payment)) {
             return $this->forbiddenResponse('ليس لديك صلاحية لاسترداد هذه المدفوعة');
         }
-
         // Validate payment status
         if ($payment->status !== 'completed') {
             return $this->errorResponse('لا يمكن استرداد مدفوعة غير مكتملة');
         }
 
+
         $validator = Validator::make($request->all(), [
-            'amount' => 'nullable|numeric|min:0.01|max:' . $payment->amount,
+            // 'amount' => 'nullable|numeric|min:0.01|max:' . $payment->amount,
             'reason' => 'required|string|max:500',
         ]);
 
@@ -49,32 +49,39 @@ class RefundController extends Controller
         }
 
         try {
-            $refundAmount = $request->amount ?? $payment->amount;
-            
+            // $refundAmount = $request->amount ?? $payment->amount;
+             $payment->update(['status' => 'refunded']);
+             return $this->successResponse([
+                 'payment_id' => $payment->id,
+                 'status' => $payment->status,
+                 'amount' => $payment->amount,
+             ], 'تم تحديث حالة المدفوعة إلى مسترد');
+
+
             // Process refund with Moyasar
-            $moyasarService = new MoyasarPaymentService();
-            $refundResult = $moyasarService->refundPayment($payment, $refundAmount);
+            // $moyasarService = new MoyasarPaymentService();
+            // $refundResult = $moyasarService->refundPayment($payment, $refundAmount);
 
-            if ($refundResult['success']) {
+            // if ($refundResult['success']) {
                 // Log refund
-                Log::info('Refund processed successfully', [
-                    'payment_id' => $payment->id,
-                    'refund_amount' => $refundAmount,
-                    'refund_id' => $refundResult['refund_id'],
-                    'processed_by' => $user->id,
-                ]);
+                // Log::info('Refund processed successfully', [
+                //     'payment_id' => $payment->id,
+                //     'refund_amount' => $refundAmount,
+                //     'refund_id' => $refundResult['refund_id'],
+                //     'processed_by' => $user->id,
+                // ]);
 
-                return $this->successResponse([
-                    'refund_id' => $refundResult['refund_id'],
-                    'amount' => $refundResult['amount'],
-                    'status' => $refundResult['status'],
-                    'payment_id' => $payment->id,
-                    'booking_number' => $payment->booking->booking_number,
-                ], 'تم معالجة الاسترداد بنجاح');
+                // return $this->successResponse([
+                //     'refund_id' => $refundResult['refund_id'],
+                //     'amount' => $refundResult['amount'],
+                //     'status' => $refundResult['status'],
+                //     'payment_id' => $payment->id,
+                //     'booking_number' => $payment->booking->booking_number,
+                // ], 'تم معالجة الاسترداد بنجاح');
 
-            } else {
-                return $this->errorResponse($refundResult['error'] ?? 'فشل في معالجة الاسترداد');
-            }
+            // } else {
+                // return $this->errorResponse($refundResult['error'] ?? 'فشل في معالجة الاسترداد');
+            // }
 
         } catch (\Exception $e) {
             Log::error('Refund processing failed', [
@@ -93,9 +100,9 @@ class RefundController extends Controller
     public function getRefunds(int $paymentId): JsonResponse
     {
         $user = Auth::guard('api')->user();
-        
+
         $payment = Payment::with(['booking.chalet', 'booking.customer'])->find($paymentId);
-        
+
         if (!$payment) {
             return $this->notFoundResponse('المدفوعة غير موجودة');
         }
@@ -145,7 +152,6 @@ class RefundController extends Controller
             // Check if booking is still cancellable (e.g., 24 hours before check-in)
             $checkInDate = $payment->booking->check_in_date;
             $hoursUntilCheckIn = now()->diffInHours($checkInDate, false);
-            
             return $hoursUntilCheckIn > 24; // Can refund if more than 24 hours until check-in
         }
 

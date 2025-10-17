@@ -91,7 +91,7 @@ class PaymentResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->money('SAR')
+                    ->money('YER')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('الحالة')

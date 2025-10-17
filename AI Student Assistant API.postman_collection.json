@@ -1,0 +1,486 @@
+{
+	"info": {
+		"_postman_id": "40dfe952-d500-4792-88c8-5f6a9e608442",
+		"name": "AI Student Assistant API",
+		"description": "Collection لاختبار واجهات AI Student Assistant (JWT).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9719215",
+		"_collection_link": "https://red-eclipse-5269.postman.co/workspace/My-Workspace~0d591435-56ac-4f2e-803a-4980ebefac66/collection/9719215-40dfe952-d500-4792-88c8-5f6a9e608442?action=share&source=collection_link&creator=9719215"
+	},
+	"item": [
+		{
+			"name": "Auth / Register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"User One\",\n  \"email\": \"user1@example.com\",\n  \"password\": \"secret123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/register",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Auth / Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var json = pm.response.json();",
+							"if(json.data && json.data.token){ pm.collectionVariables.set('token', json.data.token); }"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"user1@example.com\",\n  \"password\": \"secret123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Auth / Me",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/me",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lessons / Create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Lesson 1\",\n  \"path\": \"uploads/demo.pdf\",\n  \"type\": \"pdf\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/lessons",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"lessons"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lessons / List",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/lessons?per_page=10",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"lessons"
+					],
+					"query": [
+						{
+							"key": "per_page",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lessons / Show",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/lessons/{{lesson_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"lessons",
+						"{{lesson_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lessons / Reprocess",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/lessons/{{lesson_id}}/reprocess",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"lessons",
+						"{{lesson_id}}",
+						"reprocess"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lessons / Transcripts",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/lessons/{{lesson_id}}/transcripts",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"lessons",
+						"{{lesson_id}}",
+						"transcripts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lessons / Summaries",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/lessons/{{lesson_id}}/summaries",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"lessons",
+						"{{lesson_id}}",
+						"summaries"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lessons / Chunks",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/lessons/{{lesson_id}}/chunks",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"lessons",
+						"{{lesson_id}}",
+						"chunks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload / Signed URL (Placeholder)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"filename\": \"file1.pdf\",\n  \"type\": \"pdf\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/lessons/upload-url",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"lessons",
+						"upload-url"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"query\": \"نص\",\n  \"limit\": 5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/search",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "QA / Ask",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"lesson_id\": {{lesson_id}},\n  \"question\": \"ما ملخص الدرس؟\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/qa",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"qa"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/hooks/processing/pdf",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"lesson_id\": {{lesson_id}},\n  \"question\": \"ما ملخص الدرس؟\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/hooks/processing/pdf",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"hooks",
+						"processing",
+						"pdf"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "lesson_id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000"
+		}
+	]
+}

@@ -67,7 +67,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         try {
-            if (!$token = JWTAuth::attempt($credentials)) {
+            if (!$token = Auth::guard('api')->attempt($credentials)) {
                 return response()->json([
                     'success' => false,
                     'message' => __('messages.login_failed')
@@ -80,8 +80,7 @@ class AuthController extends Controller
             ], 500);
         }
 
-        $user = auth('api')->user();
-
+        $user = Auth::guard('api')->user();
         // Check if user is active
         if (!$user->is_active) {
             return response()->json([

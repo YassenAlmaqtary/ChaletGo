@@ -27,7 +27,6 @@ class PaymentController extends Controller
         $user = Auth::guard('api')->user();
 
         $booking = Booking::with(['chalet', 'customer'])->find($bookingId);
-
         if (!$booking) {
             return $this->notFoundResponse(__('messages.booking_not_found'));
         }
@@ -49,21 +48,21 @@ class PaymentController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'payment_method' => 'required|in:creditcard,sadad,applepay,stcpay',
+            'payment_method' => 'required|in:credit_card,cash,bank_transfer,digital_wallet',
             'amount' => 'required|numeric|min:0',
             // Credit Card fields
-            'card_number' => 'required_if:payment_method,creditcard|string|regex:/^[0-9]{13,19}$/',
-            'card_holder_name' => 'required_if:payment_method,creditcard|string|max:255',
-            'expiry_month' => 'required_if:payment_method,creditcard|integer|between:1,12',
-            'expiry_year' => 'required_if:payment_method,creditcard|integer|min:' . date('Y'),
-            'cvc' => 'required_if:payment_method,creditcard|string|regex:/^[0-9]{3,4}$/',
-            // SADAD fields
-            'sadad_username' => 'required_if:payment_method,sadad|string',
-            'sadad_password' => 'required_if:payment_method,sadad|string',
-            // Apple Pay fields
-            'apple_pay_token' => 'required_if:payment_method,applepay|string',
-            // STC Pay fields
-            'stc_pay_mobile' => 'required_if:payment_method,stcpay|string|regex:/^(05|5)[0-9]{8}$/',
+            'card_number' => 'required_if:payment_method,credit_card|string|regex:/^[0-9]{13,19}$/',
+            'card_holder_name' => 'required_if:payment_method,credit_card|string|max:255',
+            'expiry_month' => 'required_if:payment_method,credit_card|integer|between:1,12',
+            'expiry_year' => 'required_if:payment_method,credit_card|integer|min:' . date('Y'),
+            'cvc' => 'required_if:payment_method,credit_card|string|regex:/^[0-9]{3,4}$/',
+            // // SADAD fields
+            // 'sadad_username' => 'required_if:payment_method,sadad|string',
+            // 'sadad_password' => 'required_if:payment_method,sadad|string',
+            // // Apple Pay fields
+            // 'apple_pay_token' => 'required_if:payment_method,applepay|string',
+            // // STC Pay fields
+            // 'stc_pay_mobile' => 'required_if:payment_method,stcpay|string|regex:/^(05|5)[0-9]{8}$/',
         ]);
 
         if ($validator->fails()) {
@@ -79,30 +78,76 @@ class PaymentController extends Controller
         try {
             DB::beginTransaction();
 
-            // Initialize Moyasar service
-            $moyasarService = new MoyasarPaymentService();
+            // if ($request->payment_method === 'credit_card') {
+            //     $moyasarService = new MoyasarPaymentService();
+            //     $paymentPayload = array_merge($request->all(), [
+            //         'payment_method' => 'credit_card',
+            //     ]);
 
-            // Process payment with Moyasar
-            $paymentResult = $moyasarService->createPayment($booking, $request->all());
 
-            if ($paymentResult['success']) {
-                DB::commit();
+            //     $paymentResult = $moyasarService->createPayment($booking, $paymentPayload);
 
-                return $this->successResponse([
-                    'payment_id' => $paymentResult['payment_id'],
-                    'moyasar_payment_id' => $paymentResult['moyasar_payment_id'],
-                    'status' => $paymentResult['status'],
-                    'transaction_url' => $paymentResult['transaction_url'] ?? null,
-                    'message' => 'تم إنشاء عملية الدفع بنجاح',
-                ], 'تم إنشاء عملية الدفع بنجاح');
+            //     if (!$paymentResult['success']) {
+            //         DB::rollBack();
+            //         return $this->errorResponse($paymentResult['error'] ?? 'فشل في معالجة الدفع');
+            //     }
 
-            } else {
-                DB::rollback();
-                return $this->errorResponse($paymentResult['error'] ?? 'فشل في معالجة الدفع');
+            //     DB::commit();
+
+            //     return $this->successResponse([
+            //         'payment_id' => $paymentResult['payment_id'],
+            //         'moyasar_payment_id' => $paymentResult['moyasar_payment_id'],
+            //         'status' => $paymentResult['status'],
+            //         'transaction_url' => $paymentResult['transaction_url'] ?? null,
+            //         'message' => 'تم إنشاء عملية الدفع بنجاح',
+            //     ], 'تم إنشاء عملية الدفع بنجاح');
+            // }
+
+            $payment = Payment::create([
+                'booking_id' => $booking->id,
+                'payment_method' => $request->payment_method,
+                'amount' => $totalAmount,
+                'status' => Payment::STATUS_PENDING,
+                'payment_details' => $this->preparePaymentDetails($request),
+            ]);
+
+            $processResult = $this->processPaymentByMethod($payment, $request);
+
+            if (!$processResult['success']) {
+                DB::rollBack();
+                return $this->errorResponse($processResult['error'] ?? 'فشل في معالجة الدفع');
             }
 
+            $status = match ($request->payment_method) {
+                'digital_wallet' => Payment::STATUS_COMPLETED,
+               'credit_card' => $processResult['status'] === 'approved' ? Payment::STATUS_COMPLETED : Payment::STATUS_FAILED,
+                'bank_transfer' => Payment::STATUS_PENDING,
+                'cash' => Payment::STATUS_COMPLETED,
+                default => Payment::STATUS_PENDING,
+            };
+
+            $payment->update([
+                'status' => $status,
+                'transaction_id' => $processResult['transaction_id'] ?? null,
+                'payment_details' => array_merge(
+                    $payment->payment_details ?? [],
+                    $processResult['details'] ?? []
+                ),
+                'paid_at' => $status === Payment::STATUS_COMPLETED ? now() : null,
+            ]);
+
+            DB::commit();
+
+            return $this->successResponse([
+                'payment_id' => $payment->id,
+                'status' => $payment->status,
+                'transaction_id' => $payment->transaction_id,
+                'message' => 'تم تسجيل عملية الدفع بنجاح',
+            ], 'تم تسجيل عملية الدفع بنجاح');
+
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollBack();
+
             Log::error('Payment processing failed', [
                 'booking_id' => $booking->id,
                 'error' => $e->getMessage(),
@@ -213,10 +258,22 @@ class PaymentController extends Controller
             'processed_at' => now(),
         ];
 
-        if ($request->payment_method === 'credit_card') {
+        if ($request->payment_method === 'credit_card' && $request->filled('card_number')) {
             $details['card_last_four'] = substr($request->card_number, -4);
-            $details['card_holder'] = $request->card_holder;
+            $details['card_holder'] = $request->card_holder_name;
             $details['expiry'] = $request->expiry_month . '/' . $request->expiry_year;
+        }
+
+        if ($request->payment_method === 'bank_transfer') {
+            $details['note'] = 'بانتظار التحقق من التحويل البنكي';
+        }
+
+        if ($request->payment_method === 'cash') {
+            $details['note'] = 'دفع نقدي عند الوصول';
+        }
+
+        if ($request->payment_method === 'digital_wallet') {
+            $details['wallet_reference'] = $request->wallet_reference ?? null;
         }
 
         return $details;
@@ -298,12 +355,15 @@ class PaymentController extends Controller
     private function processDigitalWalletPayment(Payment $payment, Request $request): array
     {
         // Mock digital wallet processing (Apple Pay, STC Pay, etc.)
+        $walletType = $request->wallet_type ?? 'digital_wallet';
+        $walletPrefix = strtoupper(substr($walletType, 0, 3));
+
         return [
             'success' => true,
             'transaction_id' => 'DW_' . time() . '_' . rand(1000, 9999),
             'details' => [
-                'wallet_type' => 'stc_pay', // or apple_pay, google_pay, etc.
-                'wallet_transaction_id' => 'STC_' . rand(100000000, 999999999),
+                'wallet_type' => $walletType,
+                'wallet_transaction_id' => $walletPrefix . '_' . rand(100000000, 999999999),
             ]
         ];
     }

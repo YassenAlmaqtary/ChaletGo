@@ -42,12 +42,12 @@ Route::middleware('auth:api')->group(function () {
         Route::post('refresh', [AuthController::class, 'refresh']);
         Route::post('logout', [AuthController::class, 'logout']);
     });
-    
+
     // Chalets routes
-    Route::apiResource('chalets', ChaletController::class)->except(['destroy']);
-    Route::delete('chalets/{chalet:slug}', [ChaletController::class, 'destroy']);
-    Route::get('chalets/{chalet:slug}/availability', [ChaletController::class, 'checkAvailability']);
-    Route::get('my-chalets', [ChaletController::class, 'myCharets']);
+    // Route::apiResource('chalets', ChaletController::class)->except(['destroy']);
+    // Route::delete('chalets/{chalet:slug}', [ChaletController::class, 'destroy']);
+    // Route::get('chalets/{chalet:slug}/availability', [ChaletController::class, 'checkAvailability']);
+    // Route::get('my-chalets', [ChaletController::class, 'myCharets']);
 
     // Chalet Images routes
     Route::post('chalets/{chalet:slug}/images', [ChaletImageController::class, 'store']);
@@ -56,18 +56,21 @@ Route::middleware('auth:api')->group(function () {
     Route::put('chalets/{chalet:slug}/images/reorder', [ChaletImageController::class, 'reorder']);
 
     // Bookings routes
-    Route::apiResource('bookings', BookingController::class)->except(['update', 'destroy']);
-    Route::put('bookings/{booking}/status', [BookingController::class, 'update']);
-    Route::put('bookings/{booking}/cancel', [BookingController::class, 'cancel']);
-    Route::get('owner/bookings', [BookingController::class, 'ownerBookings']);
-
+    Route::middleware('auth:api')->group(function () {
+            Route::apiResource('bookings', BookingController::class)->except(['update', 'destroy']);
+            Route::put('bookings/{booking}/status', [BookingController::class, 'update']);
+            Route::put('bookings/{booking}/cancel', [BookingController::class, 'cancel']);
+            Route::get('owner/bookings', [BookingController::class, 'ownerBookings']);
+    });
     // Reviews routes
     Route::apiResource('reviews', ReviewController::class)->only(['index', 'store', 'show']);
 
     // Payment routes
-    Route::post('bookings/{booking}/payment', [PaymentController::class, 'processPayment']);
-    Route::get('payments', [PaymentController::class, 'getPayments']);
-    Route::get('payments/{payment}', [PaymentController::class, 'getPayment']);
+    Route::middleware('auth:api')->group(function () {
+        Route::post('bookings/{booking}/payment', [PaymentController::class, 'processPayment']);
+        Route::get('payments', [PaymentController::class, 'getPayments']);
+        Route::get('payments/{payment}', [PaymentController::class, 'getPayment']);
+    });
 
     // Refund routes
     Route::post('payments/{payment}/refund', [RefundController::class, 'processRefund']);

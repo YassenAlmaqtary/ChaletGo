@@ -17,10 +17,12 @@ class MoyasarPaymentService
     public function __construct()
     {
         $this->isLive = config('services.moyasar.live', false);
-        $this->apiKey = $this->isLive 
+
+        $this->apiKey = $this->isLive
             ? config('services.moyasar.live_secret_key')
             : config('services.moyasar.test_secret_key');
         $this->baseUrl = 'https://api.moyasar.com/v1';
+
     }
 
     /**
@@ -30,10 +32,10 @@ class MoyasarPaymentService
     {
         try {
             $amount = $this->convertToHalalas($booking->total_amount - $booking->discount_amount);
-            
+
             $payload = [
                 'amount' => $amount,
-                'currency' => 'SAR',
+                'currency' => 'YER',
                 'description' => "حجز شاليه {$booking->chalet->name} - رقم الحجز: {$booking->booking_number}",
                 'callback_url' => route('payment.callback'),
                 'source' => $this->buildSourceData($paymentData),
@@ -47,10 +49,9 @@ class MoyasarPaymentService
 
             $response = Http::withBasicAuth($this->apiKey, '')
                 ->post("{$this->baseUrl}/payments", $payload);
-
             if ($response->successful()) {
                 $paymentData = $response->json();
-                
+
                 // Create payment record
                 $payment = Payment::create([
                     'booking_id' => $booking->id,
@@ -104,7 +105,7 @@ class MoyasarPaymentService
 
             if ($response->successful()) {
                 $paymentData = $response->json();
-                
+
                 return [
                     'success' => true,
                     'status' => $paymentData['status'],
@@ -137,6 +138,7 @@ class MoyasarPaymentService
     public function refundPayment(Payment $payment, float $amount = null): array
     {
         try {
+
             $refundAmount = $amount ? $this->convertToHalalas($amount) : null;
             $moyasarPaymentId = $payment->payment_details['moyasar_payment_id'];
 
@@ -150,7 +152,7 @@ class MoyasarPaymentService
 
             if ($response->successful()) {
                 $refundData = $response->json();
-                
+
                 // Update payment record
                 $payment->update([
                     'status' => 'refunded',
@@ -193,9 +195,9 @@ class MoyasarPaymentService
         try {
             $eventType = $webhookData['type'];
             $paymentData = $webhookData['data'];
-            
+
             $payment = Payment::where('transaction_id', $paymentData['id'])->first();
-            
+
             if (!$payment) {
                 Log::warning('Payment not found for webhook', ['moyasar_payment_id' => $paymentData['id']]);
                 return false;
@@ -205,15 +207,15 @@ class MoyasarPaymentService
                 case 'payment_paid':
                     $this->handlePaymentPaid($payment, $paymentData);
                     break;
-                    
+
                 case 'payment_failed':
                     $this->handlePaymentFailed($payment, $paymentData);
                     break;
-                    
+
                 case 'payment_refunded':
                     $this->handlePaymentRefunded($payment, $paymentData);
                     break;
-                    
+
                 default:
                     Log::info('Unhandled webhook event', ['type' => $eventType]);
             }
@@ -236,29 +238,29 @@ class MoyasarPaymentService
     protected function buildSourceData(array $paymentData): array
     {
         switch ($paymentData['payment_method']) {
-            case 'creditcard':
+            case 'credit_card':
                 return [
-                    'type' => 'creditcard',
+                    'type' => 'credit_card',
                     'name' => $paymentData['card_holder_name'],
                     'number' => $paymentData['card_number'],
                     'cvc' => $paymentData['cvc'],
                     'month' => $paymentData['expiry_month'],
                     'year' => $paymentData['expiry_year'],
                 ];
-                
+
             case 'sadad':
                 return [
                     'type' => 'sadad',
                     'username' => $paymentData['sadad_username'],
                     'password' => $paymentData['sadad_password'],
                 ];
-                
+
             case 'applepay':
                 return [
                     'type' => 'applepay',
                     'token' => $paymentData['apple_pay_token'],
                 ];
-                
+
             default:
                 throw new Exception('طريقة دفع غير مدعومة');
         }
@@ -300,9 +302,10 @@ class MoyasarPaymentService
     protected function getPaymentMethod(array $source): string
     {
         return match ($source['type']) {
-            'creditcard' => 'credit_card',
-            'sadad' => 'sadad',
-            'applepay' => 'apple_pay',
+            'credit_card' => 'credit_card',
+            'cash' => 'cash',
+            'bank_transfer' => 'bank_transfer',
+            'digital_wallet' => 'digital_wallet',
             default => 'unknown',
         };
     }
@@ -324,7 +327,7 @@ class MoyasarPaymentService
 
         // Update booking status
         $payment->booking->update(['status' => 'confirmed']);
-        
+
         Log::info('Payment completed via webhook', ['payment_id' => $payment->id]);
     }
 
@@ -341,7 +344,7 @@ class MoyasarPaymentService
                 'updated_at' => $paymentData['updated_at'],
             ]),
         ]);
-        
+
         Log::info('Payment failed via webhook', ['payment_id' => $payment->id]);
     }
 
@@ -358,7 +361,7 @@ class MoyasarPaymentService
                 'updated_at' => $paymentData['updated_at'],
             ]),
         ]);
-        
+
         Log::info('Payment refunded via webhook', ['payment_id' => $payment->id]);
     }
 }
