@@ -109,7 +109,7 @@ class BookingController extends Controller
                 'guests_count' => $request->guests_count,
                 'total_amount' => $totalAmount,
                 'discount_amount' => 0,
-                'status' => Booking::STATUS_PENDING,
+                'status' =>Booking::STATUS_CONFIRMED, //Booking::STATUS_PENDING,
                 'special_requests' => $request->special_requests,
                 'booking_details' => [
                     'nights' => $nights,
