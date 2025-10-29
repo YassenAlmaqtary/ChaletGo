@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.mobile_app-mergeDebugResources-25:/values-night-v8/values-night-v8.xml",
+            "outputFile": "C:\\Users\\Taif\\.gradle\\daemon\\8.3\\com.example.mobile_app-mergeDebugResources-25:\\values-night-v8\\values-night-v8.xml",
             "map": [
                 {
                     "source": "D:\\ChaletGo\\mobile_app\\android\\app\\src\\main\\res\\values-night\\styles.xml",
@@ -12,6 +12,30 @@
                         "endLines": "7,16",
                         "endColumns": "12,12",
                         "endOffsets": "482,997"
+                    },
+                    "to": {
+                        "startLines": "2,6",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,236",
+                        "endLines": "5,8",
+                        "endColumns": "12,12",
+                        "endOffsets": "231,400"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "com.example.mobile_app-mergeDebugResources-25:/values-night-v8/values-night-v8.xml",
+            "map": [
+                {
+                    "source": "D:\\ChaletGo\\mobile_app\\android\\app\\src\\main\\res\\values-night\\styles.xml",
+                    "from": {
+                        "startLines": "3,-1",
+                        "startColumns": "4,-1",
+                        "startOffsets": "172,-1",
+                        "endLines": "7,-1",
+                        "endColumns": "12,-1",
+                        "endOffsets": "475,-1"
                     },
                     "to": {
                         "startLines": "2,6",
