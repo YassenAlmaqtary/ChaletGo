@@ -1,0 +1,1 @@
+ D:\\ChaletGo\\mobile_app\\.dart_tool\\flutter_build\\c2991bb888ed70719ca350a20fd46ea2\\native_assets.yaml: 
