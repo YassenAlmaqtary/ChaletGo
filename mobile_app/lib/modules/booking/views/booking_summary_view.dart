@@ -58,7 +58,7 @@ class BookingSummaryView extends StatelessWidget {
                           contentPadding: EdgeInsets.zero,
                           title: Text(extra.name),
                           trailing:
-                              Text('+${extra.price.toStringAsFixed(2)} ر.س'),
+                              Text('+${extra.price.toStringAsFixed(2)} ر.ي'),
                         ))
                     .toList(),
               );
@@ -66,16 +66,16 @@ class BookingSummaryView extends StatelessWidget {
             const Divider(height: 32),
             Obx(() => _AmountRow(
                   label: 'إجمالي الإقامة',
-                  value: '${controller.baseAmount.toStringAsFixed(2)} ر.س',
+                  value: '${controller.baseAmount.toStringAsFixed(2)} ر.ي',
                 )),
             Obx(() => _AmountRow(
                   label: 'إجمالي الإضافات',
-                  value: '${controller.extrasTotal.toStringAsFixed(2)} ر.س',
+                  value: '${controller.extrasTotal.toStringAsFixed(2)} ر.ي',
                 )),
             const SizedBox(height: 12),
             Obx(() => _AmountRow(
                   label: 'الإجمالي المبدئي',
-                  value: '${controller.grandTotal.toStringAsFixed(2)} ر.س',
+                  value: '${controller.grandTotal.toStringAsFixed(2)} ر.ي',
                   isBold: true,
                 )),
             const SizedBox(height: 24),
