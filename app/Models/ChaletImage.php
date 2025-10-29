@@ -36,7 +36,16 @@ class ChaletImage extends Model
      */
     public function getImageUrlAttribute()
     {
-        return Storage::url($this->image_path);
+            //  if (request()->is('api/*')) {
+           //   return $this->image_path ? url('storage/' . $this->image_path) : null;
+           // }
+                // return $this->image_path;
+
+        if (preg_match('/^https?:\/\//', $this->image_path)) {
+            return $this->image_path;
+        }
+        return asset(Storage::url($this->image_path));
+
     }
 
     /**
