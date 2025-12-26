@@ -10,6 +10,7 @@ abstract class Routes {
   static const bookingList = '/bookings';
   static const bookingStart = '/booking/start';
   static const bookingSummary = '/booking/summary';
+  static const bookingDetail = '/booking/detail';
   static const paymentMethod = '/booking/payment';
   static const paymentResult = '/booking/result';
 }

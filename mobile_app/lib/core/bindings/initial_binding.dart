@@ -4,6 +4,7 @@ import '../../data/providers/api_provider.dart';
 import '../../data/providers/auth_provider.dart';
 import '../../data/providers/chalet_provider.dart';
 import '../../data/providers/booking_provider.dart';
+import '../../data/providers/review_provider.dart';
 import '../../modules/auth/controllers/auth_controller.dart';
 import '../../modules/chalets/controllers/chalet_controller.dart';
 import '../../modules/chalets/controllers/chalet_detail_controller.dart';
@@ -24,6 +25,8 @@ class InitialBinding extends Bindings {
     Get.lazyPut<ChaletProvider>(() => ChaletProvider(Get.find<ApiProvider>()),
         fenix: true);
     Get.lazyPut<BookingProvider>(() => BookingProvider(Get.find<ApiProvider>()),
+        fenix: true);
+    Get.lazyPut<ReviewProvider>(() => ReviewProvider(Get.find<ApiProvider>()),
         fenix: true);
     Get.lazyPut<AuthController>(() => AuthController(Get.find(), Get.find()),
         fenix: true);

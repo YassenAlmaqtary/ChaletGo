@@ -12,6 +12,7 @@ import '../modules/booking/views/payment_method_view.dart';
 import '../modules/booking/views/payment_result_view.dart';
 import '../modules/booking/views/booking_list_view.dart';
 import '../modules/booking/controllers/booking_list_controller.dart';
+import '../modules/booking/views/booking_detail_view.dart';
 import '../data/providers/booking_provider.dart';
 import '../modules/splash/controllers/splash_controller.dart';
 import '../modules/splash/views/splash_view.dart';
@@ -56,6 +57,7 @@ class AppPages {
         Get.put(BookingListController(Get.find<BookingProvider>()));
       }),
     ),
+    GetPage(name: Routes.bookingDetail, page: () => const BookingDetailView()),
     GetPage(name: Routes.bookingStart, page: () => const BookingStartView()),
     GetPage(
         name: Routes.bookingSummary, page: () => const BookingSummaryView()),

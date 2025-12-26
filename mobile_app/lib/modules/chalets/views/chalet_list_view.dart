@@ -22,6 +22,11 @@ class ChaletListView extends StatelessWidget {
         title: const Text('الشاليهات'),
         actions: [
           _AppBarIconButton(
+            icon: Icons.receipt_long_outlined,
+            tooltip: 'حجوزاتي',
+            onTap: () => Get.toNamed(Routes.bookingList),
+          ),
+          _AppBarIconButton(
             icon: Icons.person,
             tooltip: 'الملف الشخصي',
             onTap: () => Get.toNamed(Routes.profile),

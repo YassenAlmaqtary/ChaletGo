@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../controllers/booking_list_controller.dart';
+import '../../../routes/app_pages.dart';
 
 class BookingListView extends StatelessWidget {
   const BookingListView({super.key});
@@ -42,71 +43,89 @@ class BookingListView extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   itemBuilder: (context, index) {
                     final booking = controller.bookings[index];
-                    return Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    booking.chalet?.name ?? 'شاليه غير معروف',
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                ),
-                                _StatusChip(label: booking.statusLabel),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text('رقم الحجز: ${booking.bookingNumber}'),
-                            const SizedBox(height: 6),
-                            Text(_formatStay(
-                                booking.checkInDate, booking.checkOutDate)),
-                            const SizedBox(height: 6),
-                            Text('عدد الضيوف: ${booking.guestsCount}'),
-                            const SizedBox(height: 6),
-                            Text(
-                                'الإجمالي النهائي: ${booking.finalAmount.toStringAsFixed(2)} ر.س'),
-                            if (booking.extras.isNotEmpty) ...[
-                              const SizedBox(height: 12),
-                              Text('إضافات:',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 4),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 4,
-                                children: booking.extras.map((extra) {
-                                  return Chip(
-                                    label: Text(
-                                      '${extra.name} (+${extra.price.toStringAsFixed(0)} ر.س)',
-                                      style: const TextStyle(fontSize: 12),
+                    return InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () async {
+                        final result = await Get.toNamed(
+                          Routes.bookingDetail,
+                          arguments: {
+                            'booking': booking,
+                            'bookingNumber': booking.bookingNumber,
+                          },
+                        );
+                        if (result == true) {
+                          controller.loadBookings();
+                        }
+                      },
+                      child: Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      booking.chalet?.name ?? 'شاليه غير معروف',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
                                     ),
-                                  );
-                                }).toList(),
+                                  ),
+                                  _StatusChip(label: booking.statusLabel),
+                                ],
                               ),
+                              const SizedBox(height: 8),
+                              Text('رقم الحجز: ${booking.bookingNumber}'),
+                              const SizedBox(height: 6),
+                              Text(_formatStay(
+                                  booking.checkInDate, booking.checkOutDate)),
+                              const SizedBox(height: 6),
+                              Text('عدد الضيوف: ${booking.guestsCount}'),
+                              const SizedBox(height: 6),
+                              Text(
+                                  'الإجمالي النهائي: ${booking.finalAmount.toStringAsFixed(2)} ر.س'),
+                              if (booking.extras.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                Text('إضافات:',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 4),
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 4,
+                                  children: booking.extras.map((extra) {
+                                    return Chip(
+                                      label: Text(
+                                        '${extra.name} (+${extra.price.toStringAsFixed(0)} ر.س)',
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
+                              if (booking.specialRequests?.isNotEmpty ==
+                                  true) ...[
+                                const SizedBox(height: 12),
+                                Text('طلبات خاصة:',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 4),
+                                Text(booking.specialRequests!),
+                              ],
                             ],
-                            if (booking.specialRequests?.isNotEmpty ==
-                                true) ...[
-                              const SizedBox(height: 12),
-                              Text('طلبات خاصة:',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 4),
-                              Text(booking.specialRequests!),
-                            ],
-                          ],
+                          ),
                         ),
                       ),
                     );

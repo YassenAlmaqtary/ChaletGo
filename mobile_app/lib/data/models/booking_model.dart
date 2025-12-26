@@ -1,5 +1,6 @@
 import 'booking_extra_model.dart';
 import 'payment_model.dart';
+import 'review_model.dart';
 
 class BookingModel {
   final int id;
@@ -19,6 +20,7 @@ class BookingModel {
   final ChaletSummary? chalet;
   final List<BookingExtraModel> extras;
   final List<PaymentModel> payments;
+  final ReviewModel? review;
 
   const BookingModel({
     required this.id,
@@ -38,6 +40,7 @@ class BookingModel {
     this.chalet,
     this.extras = const [],
     this.payments = const [],
+    this.review,
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
@@ -73,6 +76,9 @@ class BookingModel {
               .map(PaymentModel.fromJson)
               .toList()
           : const [],
+      review: json['review'] is Map<String, dynamic>
+          ? ReviewModel.fromJson(json['review'] as Map<String, dynamic>)
+          : null,
     );
   }
 }
