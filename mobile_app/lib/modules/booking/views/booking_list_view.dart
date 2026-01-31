@@ -6,13 +6,21 @@ import '../controllers/booking_list_controller.dart';
 import '../../../routes/app_pages.dart';
 
 class BookingListView extends StatelessWidget {
-  const BookingListView({super.key});
+  final GlobalKey<ScaffoldState>? scaffoldKey;
+  
+  const BookingListView({super.key, this.scaffoldKey});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<BookingListController>();
     return Scaffold(
-      appBar: AppBar(title: const Text('حجوزاتي')),
+      appBar: AppBar(
+        title: Text('my_bookings'.tr),
+        leading: IconButton(
+          icon: const Icon(Icons.menu_rounded),
+          onPressed: () => scaffoldKey?.currentState?.openDrawer(),
+        ),
+      ),
       body: Obx(() {
         if (controller.isLoading.value && controller.bookings.isEmpty) {
           return const Center(child: CircularProgressIndicator());
@@ -32,10 +40,10 @@ class BookingListView extends StatelessWidget {
               ? ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(24),
-                  children: const [
+                  children: [
                     _CenteredPlaceholder(
-                      title: 'لا توجد حجوزات حالية',
-                      subtitle: 'ابدأ بحجز شاليه لتجده هنا فور تأكيده.',
+                      title: 'no_bookings'.tr,
+                      subtitle: 'start_booking_subtitle'.tr,
                     ),
                   ],
                 )
@@ -175,7 +183,7 @@ class _CenteredMessage extends StatelessWidget {
 }
 
 class _CenteredPlaceholder extends StatelessWidget {
-  const _CenteredPlaceholder({required this.title, required this.subtitle});
+  _CenteredPlaceholder({required this.title, required this.subtitle});
 
   final String title;
   final String subtitle;
@@ -210,7 +218,7 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Chip(
-      label: Text(label.isEmpty ? 'غير محدد' : label),
+      label: Text(label.isEmpty ? 'undefined'.tr : label),
       backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
       labelStyle: TextStyle(
         color: Theme.of(context).colorScheme.primary,

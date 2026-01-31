@@ -91,7 +91,7 @@ class PaymentResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->money('YER')
+                    ->money('SAR')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('الحالة')
@@ -182,7 +182,8 @@ class PaymentResource extends Resource
                     Tables\Actions\DeleteBulkAction::make()
                         ->label('حذف المحدد'),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array

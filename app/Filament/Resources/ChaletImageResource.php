@@ -33,21 +33,55 @@ class ChaletImageResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('chalet_id')
-                    ->relationship('chalet', 'name')
-                    ->required(),
-                Forms\Components\FileUpload::make('image_path')
-                    ->image()
-                    ->required(),
-                Forms\Components\TextInput::make('alt_text')
-                    ->maxLength(255)
-                    ->default(null),
-                Forms\Components\Toggle::make('is_primary')
-                    ->required(),
-                Forms\Components\TextInput::make('sort_order')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
+                Forms\Components\Section::make('معلومات الصورة')
+                    ->schema([
+                        Forms\Components\Select::make('chalet_id')
+                            ->label('الشاليه')
+                            ->relationship('chalet', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->disabled(fn ($record) => $record !== null),
+                        Forms\Components\FileUpload::make('image_path')
+                            ->label('الصورة')
+                            ->image()
+                            ->directory(fn ($record) => $record && $record->chalet_id ? 'chalets/' . $record->chalet_id : 'chalets/temp')
+                            ->visibility('public')
+                            ->imageResizeMode('cover')
+                            ->imageResizeTargetWidth('1920')
+                            ->imageResizeTargetHeight('1080')
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(5120)
+                            ->required(fn ($context) => $context === 'create')
+                            ->helperText('يمكنك رفع صورة واحدة بحد أقصى 5 ميجابايت'),
+                        Forms\Components\TextInput::make('alt_text')
+                            ->label('النص البديل')
+                            ->maxLength(255)
+                            ->default(null)
+                            ->helperText('وصف الصورة للمحركات البحثية'),
+                    ])->columns(2),
+
+                Forms\Components\Section::make('إعدادات العرض')
+                    ->schema([
+                        Forms\Components\Toggle::make('is_primary')
+                            ->label('صورة رئيسية')
+                            ->helperText('الصورة الرئيسية تظهر في المقدمة')
+                            ->afterStateUpdated(function ($state, $set, $get, $record) {
+                                if ($state && $record && $record->chalet_id) {
+                                    // إلغاء الصورة الرئيسية من جميع الصور الأخرى للشاليه نفسه
+                                    \App\Models\ChaletImage::where('chalet_id', $record->chalet_id)
+                                        ->where('id', '!=', $record->id)
+                                        ->update(['is_primary' => false]);
+                                }
+                            })
+                            ->required(),
+                        Forms\Components\TextInput::make('sort_order')
+                            ->label('ترتيب العرض')
+                            ->numeric()
+                            ->default(0)
+                            ->required()
+                            ->helperText('كلما قل الرقم، كلما ظهرت الصورة أولاً'),
+                    ])->columns(2),
             ]);
     }
 
@@ -55,37 +89,124 @@ class ChaletImageResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('image_path')
+                    ->label('الصورة')
+                    ->getStateUsing(fn ($record) => $record->image_url ?? asset('storage/' . $record->image_path))
+                    ->height(100)
+                    ->width(150),
                 Tables\Columns\TextColumn::make('chalet.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\ImageColumn::make('image_path'),
+                    ->label('الشاليه')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
                 Tables\Columns\TextColumn::make('alt_text')
-                    ->searchable(),
+                    ->label('النص البديل')
+                    ->searchable()
+                    ->limit(40)
+                    ->wrap(),
                 Tables\Columns\IconColumn::make('is_primary')
-                    ->boolean(),
+                    ->label('رئيسية')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-star')
+                    ->falseIcon('heroicon-o-star')
+                    ->trueColor('warning')
+                    ->falseColor('gray')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('sort_order')
+                    ->label('الترتيب')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('تاريخ الإضافة')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('تاريخ التحديث')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('chalet_id')
+                    ->label('الشاليه')
+                    ->relationship('chalet', 'name')
+                    ->searchable()
+                    ->preload(),
+                Tables\Filters\TernaryFilter::make('is_primary')
+                    ->label('الصورة الرئيسية')
+                    ->trueLabel('رئيسية')
+                    ->falseLabel('عادية')
+                    ->native(false),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('تعديل'),
+                Tables\Actions\Action::make('set_primary')
+                    ->label('تعيين كرئيسية')
+                    ->icon('heroicon-o-star')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->modalHeading('تعيين كصورة رئيسية')
+                    ->modalDescription('هل تريد تعيين هذه الصورة كصورة رئيسية للشاليه؟')
+                    ->action(function ($record) {
+                        // إلغاء الصورة الرئيسية من جميع الصور الأخرى للشاليه نفسه
+                        \App\Models\ChaletImage::where('chalet_id', $record->chalet_id)
+                            ->where('id', '!=', $record->id)
+                            ->update(['is_primary' => false]);
+                        // تعيين هذه الصورة كرئيسية
+                        $record->update(['is_primary' => true]);
+                    })
+                    ->visible(fn ($record) => !$record->is_primary),
+                Tables\Actions\DeleteAction::make()
+                    ->label('حذف')
+                    ->before(function ($record) {
+                        // حذف الملف من التخزين
+                        if ($record->image_path) {
+                            \Illuminate\Support\Facades\Storage::disk('public')->delete($record->image_path);
+                            // حذف الصورة المصغرة إن وجدت
+                            $thumbnailPath = str_replace(basename($record->image_path), 'thumb_' . basename($record->image_path), $record->image_path);
+                            \Illuminate\Support\Facades\Storage::disk('public')->delete($thumbnailPath);
+                        }
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('حذف الصورة')
+                    ->modalDescription('هل أنت متأكد من حذف هذه الصورة؟ لا يمكن التراجع عن هذا الإجراء.')
+                    ->modalSubmitActionLabel('حذف'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('حذف المحدد')
+                        ->before(function ($records) {
+                            foreach ($records as $record) {
+                                if ($record->image_path) {
+                                    \Illuminate\Support\Facades\Storage::disk('public')->delete($record->image_path);
+                                    $thumbnailPath = str_replace(basename($record->image_path), 'thumb_' . basename($record->image_path), $record->image_path);
+                                    \Illuminate\Support\Facades\Storage::disk('public')->delete($thumbnailPath);
+                                }
+                            }
+                        }),
+                    Tables\Actions\BulkAction::make('set_all_primary')
+                        ->label('تعيين المحدد كرئيسية')
+                        ->icon('heroicon-o-star')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->action(function ($records) {
+                            // تعيين أول صورة كرئيسية فقط
+                            if ($records && $records->isNotEmpty()) {
+                                $firstRecord = $records->first();
+                                // إلغاء الصورة الرئيسية من جميع الصور الأخرى للشاليه
+                                \App\Models\ChaletImage::where('chalet_id', $firstRecord->chalet_id)
+                                    ->update(['is_primary' => false]);
+                                // تعيين أول صورة كرئيسية
+                                $firstRecord->update(['is_primary' => true]);
+                            }
+                        })
+                        ->visible(fn ($records) => $records !== null && $records->count() > 0),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array

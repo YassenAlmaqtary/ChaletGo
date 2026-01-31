@@ -26,61 +26,106 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    // Load data immediately if user is already logged in
+    if (!isClosed && authService.isLoggedIn && authService.user != null) {
+      final user = authService.user!;
+      nameCtrl.text = user.name;
+      emailCtrl.text = user.email;
+      phoneCtrl.text = user.phone ?? '';
+      isLoading.value = false;
+    }
+    // Then try to refresh from API
     _loadInitialData();
   }
 
   Future<void> _loadInitialData() async {
+    if (isClosed) return;
+    
+    // Use cached user data first (from authService)
     final cachedUser = authService.user;
-    if (cachedUser != null) {
+    if (cachedUser != null && !isClosed) {
       nameCtrl.text = cachedUser.name;
       emailCtrl.text = cachedUser.email;
       phoneCtrl.text = cachedUser.phone ?? '';
+      // Set loading to false immediately since we have cached data
+      isLoading.value = false;
+    } else {
+      // No cached data, show loading
+      isLoading.value = true;
     }
 
+    // Try to refresh data from API in background (non-blocking)
     try {
-      isLoading.value = true;
-      final user = await authController.loadProfile();
-      if (user != null) {
+      if (isClosed) return;
+      final user = await authController.loadProfile().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          // If timeout, just return null and use cached data
+          return null;
+        },
+      );
+      if (user != null && !isClosed) {
         nameCtrl.text = user.name;
         emailCtrl.text = user.email;
         phoneCtrl.text = user.phone ?? '';
       }
+    } catch (e) {
+      // If error, just use cached data - don't show error to user
+      Get.log('Error loading profile: $e');
     } finally {
-      isLoading.value = false;
+      if (!isClosed) {
+        isLoading.value = false;
+      }
     }
   }
 
   Future<void> saveProfile() async {
+    if (isClosed) return;
+    
     errorMessage.value = '';
     successMessage.value = '';
 
-    if (nameCtrl.text.trim().isEmpty) {
-      errorMessage.value = 'الرجاء إدخال الاسم';
+    if (isClosed) return;
+    final name = nameCtrl.text.trim();
+    if (name.isEmpty) {
+      if (!isClosed) {
+        errorMessage.value = 'الرجاء إدخال الاسم';
+      }
       return;
     }
 
+    if (isClosed) return;
     final password = passwordCtrl.text.trim();
     final confirm = confirmPasswordCtrl.text.trim();
 
     if (password.isNotEmpty && password.length < 8) {
-      errorMessage.value = 'كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل';
+      if (!isClosed) {
+        errorMessage.value = 'كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل';
+      }
       return;
     }
 
     if (password.isNotEmpty && password != confirm) {
-      errorMessage.value = 'تأكيد كلمة المرور غير مطابق';
+      if (!isClosed) {
+        errorMessage.value = 'تأكيد كلمة المرور غير مطابق';
+      }
       return;
     }
 
+    if (isClosed) return;
     isSaving.value = true;
+    if (isClosed) return;
+    final phone = phoneCtrl.text.trim();
     final payload = {
-      'name': nameCtrl.text.trim(),
-      'phone': phoneCtrl.text.trim(),
+      'name': name,
+      'phone': phone,
       if (password.isNotEmpty) 'password': password,
       if (password.isNotEmpty) 'password_confirmation': confirm,
     };
 
     final result = await authController.updateProfile(payload);
+    
+    if (isClosed) return;
     isSaving.value = false;
 
     if (result != null) {
@@ -89,12 +134,14 @@ class ProfileController extends GetxController {
     }
 
     successMessage.value = 'تم تحديث البيانات بنجاح';
-    if (password.isNotEmpty) {
+    if (password.isNotEmpty && !isClosed) {
       passwordCtrl.clear();
       confirmPasswordCtrl.clear();
     }
-    Get.snackbar('تم', successMessage.value,
-        snackPosition: SnackPosition.BOTTOM);
+    if (!isClosed) {
+      Get.snackbar('تم', successMessage.value,
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
 
   void togglePasswordVisibility() {

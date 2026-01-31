@@ -30,7 +30,7 @@ class RefundController extends Controller
         }
 
         // Check permissions
-        if ($this->canRefund($user, $payment)) {
+        if (!$this->canRefund($user, $payment)) {
             return $this->forbiddenResponse('ليس لديك صلاحية لاسترداد هذه المدفوعة');
         }
         // Validate payment status

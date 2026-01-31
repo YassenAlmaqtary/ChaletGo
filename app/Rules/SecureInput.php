@@ -14,14 +14,15 @@ class SecureInput implements ValidationRule
         // SQL Injection patterns
         '/(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|SCRIPT)\b)/i',
 
-        // XSS patterns
-        '/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi',
+        // XSS patterns - simplified to avoid complex regex issues
+        '/<script/i',
+        '/<\/script>/i',
         '/javascript:/i',
         '/on\w+\s*=/i',
 
         // Path traversal
-        '/\.\.\//i',
-        '/\.\.\\/i',
+        '/\.\.\//i', // Unix/Linux path traversal
+        '/\.\.\\\\/i', // Windows path traversal
 
         // Command injection
         '/[;&|`$(){}]/i',

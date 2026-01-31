@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends StatelessWidget {
-  const ProfileView({super.key});
+  final GlobalKey<ScaffoldState>? scaffoldKey;
+  
+  const ProfileView({super.key, this.scaffoldKey});
 
   @override
   Widget build(BuildContext context) {
@@ -12,14 +14,11 @@ class ProfileView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('الملف الشخصي'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: controller.logout,
-            tooltip: 'تسجيل الخروج',
-          ),
-        ],
+        title: Text('profile'.tr),
+        leading: IconButton(
+          icon: const Icon(Icons.menu_rounded),
+          onPressed: () => scaffoldKey?.currentState?.openDrawer(),
+        ),
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -34,23 +33,22 @@ class ProfileView extends StatelessWidget {
               children: [
                 TextField(
                   controller: controller.nameCtrl,
-                  decoration: const InputDecoration(labelText: 'الاسم الكامل'),
+                  decoration: InputDecoration(labelText: 'full_name'.tr),
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: controller.emailCtrl,
                   enabled: false,
-                  decoration:
-                      const InputDecoration(labelText: 'البريد الإلكتروني'),
+                  decoration: InputDecoration(labelText: 'email'.tr),
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: controller.phoneCtrl,
-                  decoration: const InputDecoration(labelText: 'رقم الجوال'),
+                  decoration: InputDecoration(labelText: 'phone_number'.tr),
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'تغيير كلمة المرور',
+                  'change_password_title'.tr,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
@@ -59,9 +57,8 @@ class ProfileView extends StatelessWidget {
                     controller: controller.passwordCtrl,
                     obscureText: controller.passwordObscure.value,
                     decoration: InputDecoration(
-                      labelText: 'كلمة المرور الجديدة',
-                      helperText:
-                          'اترك الحقل فارغاً للإبقاء على كلمة المرور الحالية',
+                      labelText: 'new_password'.tr,
+                      helperText: 'password_helper'.tr,
                       suffixIcon: IconButton(
                         onPressed: controller.togglePasswordVisibility,
                         icon: Icon(controller.passwordObscure.value
@@ -77,7 +74,7 @@ class ProfileView extends StatelessWidget {
                     controller: controller.confirmPasswordCtrl,
                     obscureText: controller.confirmPasswordObscure.value,
                     decoration: InputDecoration(
-                      labelText: 'تأكيد كلمة المرور الجديدة',
+                      labelText: 'confirm_new_password'.tr,
                       suffixIcon: IconButton(
                         onPressed: controller.toggleConfirmPasswordVisibility,
                         icon: Icon(controller.confirmPasswordObscure.value
@@ -125,7 +122,7 @@ class ProfileView extends StatelessWidget {
                                 child: CircularProgressIndicator(
                                     strokeWidth: 2, color: Colors.white),
                               )
-                            : const Text('حفظ التغييرات'),
+                            : Text('save_changes'.tr),
                       )),
                 ),
               ],

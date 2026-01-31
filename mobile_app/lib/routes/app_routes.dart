@@ -4,6 +4,7 @@ abstract class Routes {
   static const splash = '/';
   static const login = '/login';
   static const register = '/register';
+  static const main = '/main';
   static const profile = '/profile';
   static const chaletList = '/chalets';
   static const chaletDetail = '/chalet-detail';
@@ -13,4 +14,7 @@ abstract class Routes {
   static const bookingDetail = '/booking/detail';
   static const paymentMethod = '/booking/payment';
   static const paymentResult = '/booking/result';
+  static const settings = '/settings';
+  static const help = '/help';
+  static const about = '/about';
 }

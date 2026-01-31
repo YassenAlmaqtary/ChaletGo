@@ -76,10 +76,15 @@ class BookingDetailController extends GetxController {
   }
 
   Future<void> fetchBooking() async {
+    if (isClosed) return;
+    
     try {
       isLoading.value = true;
       errorMessage.value = '';
       final response = await _bookingProvider.getBooking(bookingNumber);
+      
+      if (isClosed) return;
+      
       if (response['success'] == true) {
         final data = response['data'] as Map<String, dynamic>?;
         if (data != null) {
@@ -89,93 +94,156 @@ class BookingDetailController extends GetxController {
           return;
         }
       }
-      errorMessage.value =
-          response['message']?.toString() ?? 'تعذر تحميل تفاصيل الحجز';
+      if (!isClosed) {
+        errorMessage.value =
+            response['message']?.toString() ?? 'تعذر تحميل تفاصيل الحجز';
+      }
     } catch (_) {
-      errorMessage.value = 'حدث خطأ أثناء تحميل تفاصيل الحجز';
+      if (!isClosed) {
+        errorMessage.value = 'حدث خطأ أثناء تحميل تفاصيل الحجز';
+      }
     } finally {
-      isLoading.value = false;
+      if (!isClosed) {
+        isLoading.value = false;
+      }
     }
   }
 
   Future<bool> requestCancellation() async {
+    if (isClosed) return false;
+    
     errorMessage.value = '';
+    if (isClosed) return false;
     final reason = cancelReasonCtrl.text.trim();
     if (reason.isEmpty) {
-      errorMessage.value = 'يرجى إدخال سبب الإلغاء';
+      if (!isClosed) {
+        errorMessage.value = 'يرجى إدخال سبب الإلغاء';
+      }
       return false;
     }
 
     try {
+      if (isClosed) return false;
       isCancelling.value = true;
       final response = await _bookingProvider.cancelBooking(
         bookingNumber,
         reason: reason,
       );
+      
+      if (isClosed) return false;
+      
       if (response['success'] == true) {
         await fetchBooking();
         _hasMutations = true;
-        cancelReasonCtrl.clear();
+        if (!isClosed) {
+          cancelReasonCtrl.clear();
+        }
         return true;
       }
-      errorMessage.value =
-          response['message']?.toString() ?? 'تعذر إلغاء الحجز';
+      if (!isClosed) {
+        errorMessage.value =
+            response['message']?.toString() ?? 'تعذر إلغاء الحجز';
+      }
       return false;
     } catch (_) {
-      errorMessage.value = 'حدث خطأ أثناء إلغاء الحجز';
+      if (!isClosed) {
+        errorMessage.value = 'حدث خطأ أثناء إلغاء الحجز';
+      }
       return false;
     } finally {
-      isCancelling.value = false;
+      if (!isClosed) {
+        isCancelling.value = false;
+      }
     }
   }
 
   Future<bool> submitReview() async {
+    if (isClosed) return false;
+    
     errorMessage.value = '';
     final data = current;
     if (data == null) {
-      errorMessage.value = 'لا توجد بيانات للحجز';
+      if (!isClosed) {
+        errorMessage.value = 'لا توجد بيانات للحجز';
+      }
       return false;
     }
 
     if (reviewRating.value < 1 || reviewRating.value > 5) {
-      errorMessage.value = 'يرجى اختيار تقييم من 1 إلى 5';
+      if (!isClosed) {
+        errorMessage.value = 'يرجى اختيار تقييم من 1 إلى 5';
+      }
       return false;
     }
 
     try {
+      if (isClosed) return false;
       isSubmittingReview.value = true;
-      final response = await _reviewProvider.createReview({
+      if (isClosed) return false;
+      final comment = reviewCommentCtrl.text.trim();
+      final payload = <String, dynamic>{
         'booking_id': data.id,
         'rating': reviewRating.value,
-        'comment': reviewCommentCtrl.text.trim().isEmpty
-            ? null
-            : reviewCommentCtrl.text.trim(),
-      });
+      };
+      // Always include comment field if not empty (API will handle null)
+      if (comment.isNotEmpty) {
+        payload['comment'] = comment;
+      }
+      final response = await _reviewProvider.createReview(payload);
+
+      if (isClosed) return false;
 
       if (response['success'] == true) {
         reviewRating.value = 0;
-        reviewCommentCtrl.clear();
+        if (!isClosed) {
+          reviewCommentCtrl.clear();
+        }
         await fetchBooking();
         _hasMutations = true;
         return true;
       }
 
-      errorMessage.value =
-          response['message']?.toString() ?? 'تعذر إرسال التقييم';
+      // Handle error response
+      if (!isClosed) {
+        String errorMsg = response['message']?.toString() ?? 'تعذر إرسال التقييم';
+        
+        // Check for validation errors
+        final errors = response['errors'];
+        if (errors != null && errors is Map) {
+          final firstError = errors.values.first;
+          if (firstError is List && firstError.isNotEmpty) {
+            errorMsg = firstError.first.toString();
+          } else if (firstError is String) {
+            errorMsg = firstError;
+          }
+        }
+        
+        errorMessage.value = errorMsg;
+      }
       return false;
-    } catch (_) {
-      errorMessage.value = 'حدث خطأ أثناء إرسال التقييم';
+    } catch (e) {
+      if (!isClosed) {
+        errorMessage.value = e.toString().contains('Exception:')
+            ? e.toString().replaceFirst('Exception: ', '')
+            : 'حدث خطأ أثناء إرسال التقييم';
+      }
       return false;
     } finally {
-      isSubmittingReview.value = false;
+      if (!isClosed) {
+        isSubmittingReview.value = false;
+      }
     }
   }
 
   Future<bool> submitPayment() async {
+    if (isClosed) return false;
+    
     paymentError.value = '';
     final data = current;
     if (data == null) {
-      paymentError.value = 'لا توجد بيانات للحجز';
+      if (!isClosed) {
+        paymentError.value = 'لا توجد بيانات للحجز';
+      }
       return false;
     }
 
@@ -186,34 +254,52 @@ class BookingDetailController extends GetxController {
     };
 
     if (method == 'credit_card') {
-      if (cardNumberCtrl.text.trim().length < 13) {
-        paymentError.value = 'يرجى إدخال رقم البطاقة بشكل صحيح';
+      if (isClosed) return false;
+      final cardNumber = cardNumberCtrl.text.trim();
+      final cardHolder = cardHolderCtrl.text.trim();
+      final expiryMonthStr = expiryMonthCtrl.text.trim();
+      final expiryYearStr = expiryYearCtrl.text.trim();
+      final cvc = cvcCtrl.text.trim();
+      
+      if (cardNumber.length < 13) {
+        if (!isClosed) {
+          paymentError.value = 'يرجى إدخال رقم البطاقة بشكل صحيح';
+        }
         return false;
       }
-      if (cardHolderCtrl.text.trim().isEmpty) {
-        paymentError.value = 'يرجى إدخال اسم صاحب البطاقة';
+      if (cardHolder.isEmpty) {
+        if (!isClosed) {
+          paymentError.value = 'يرجى إدخال اسم صاحب البطاقة';
+        }
         return false;
       }
-      final month = int.tryParse(expiryMonthCtrl.text.trim());
-      final year = int.tryParse(expiryYearCtrl.text.trim());
+      final month = int.tryParse(expiryMonthStr);
+      final year = int.tryParse(expiryYearStr);
       if (month == null || month < 1 || month > 12) {
-        paymentError.value = 'يرجى إدخال شهر انتهاء صالح';
+        if (!isClosed) {
+          paymentError.value = 'يرجى إدخال شهر انتهاء صالح';
+        }
         return false;
       }
       if (year == null || year < DateTime.now().year) {
-        paymentError.value = 'يرجى إدخال سنة انتهاء صالحة';
+        if (!isClosed) {
+          paymentError.value = 'يرجى إدخال سنة انتهاء صالحة';
+        }
         return false;
       }
-      if (cvcCtrl.text.trim().length < 3) {
-        paymentError.value = 'يرجى إدخال رمز التحقق الصحيح';
+      if (cvc.length < 3) {
+        if (!isClosed) {
+          paymentError.value = 'يرجى إدخال رمز التحقق الصحيح';
+        }
         return false;
       }
+      if (isClosed) return false;
       payload.addAll({
-        'card_number': cardNumberCtrl.text.trim(),
-        'card_holder_name': cardHolderCtrl.text.trim(),
+        'card_number': cardNumber,
+        'card_holder_name': cardHolder,
         'expiry_month': month,
         'expiry_year': year,
-        'cvc': cvcCtrl.text.trim(),
+        'cvc': cvc,
       });
     }
 
@@ -223,28 +309,40 @@ class BookingDetailController extends GetxController {
     }
 
     try {
+      if (isClosed) return false;
       isProcessingPayment.value = true;
       final response = await _bookingProvider.payForBooking(data.id, payload);
+      
+      if (isClosed) return false;
+      
       if (response['success'] == true) {
         _hasMutations = true;
         await fetchBooking();
-        cardNumberCtrl.clear();
-        cardHolderCtrl.clear();
-        expiryMonthCtrl.clear();
-        expiryYearCtrl.clear();
-        cvcCtrl.clear();
-        Get.snackbar('تم', 'تم تسجيل عملية الدفع بنجاح',
-            snackPosition: SnackPosition.BOTTOM);
+        if (!isClosed) {
+          cardNumberCtrl.clear();
+          cardHolderCtrl.clear();
+          expiryMonthCtrl.clear();
+          expiryYearCtrl.clear();
+          cvcCtrl.clear();
+          Get.snackbar('تم', 'تم تسجيل عملية الدفع بنجاح',
+              snackPosition: SnackPosition.BOTTOM);
+        }
         return true;
       }
-      paymentError.value =
-          response['message']?.toString() ?? 'تعذر إتمام الدفع';
+      if (!isClosed) {
+        paymentError.value =
+            response['message']?.toString() ?? 'تعذر إتمام الدفع';
+      }
       return false;
     } catch (_) {
-      paymentError.value = 'حدث خطأ أثناء معالجة الدفع';
+      if (!isClosed) {
+        paymentError.value = 'حدث خطأ أثناء معالجة الدفع';
+      }
       return false;
     } finally {
-      isProcessingPayment.value = false;
+      if (!isClosed) {
+        isProcessingPayment.value = false;
+      }
     }
   }
 

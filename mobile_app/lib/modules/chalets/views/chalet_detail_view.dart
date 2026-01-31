@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
 import '../controllers/chalet_detail_controller.dart';
 import '../../../routes/app_pages.dart';
+import '../../../core/services/auth_service.dart';
 
 class ChaletDetailView extends StatelessWidget {
   const ChaletDetailView({super.key});
@@ -20,7 +21,7 @@ class ChaletDetailView extends StatelessWidget {
         backgroundColor: Colors.transparent,
       ),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
+        decoration: BoxDecoration(gradient: AppColors.getBackgroundGradient(context)),
         child: Obx(() {
           if (controller.errorMessage.value.isNotEmpty &&
               controller.chalet.value == null) {
@@ -50,8 +51,8 @@ class ChaletDetailView extends StatelessWidget {
                     offset: const Offset(0, -30),
                     child: Container(
                       width: double.infinity,
-                      decoration: const BoxDecoration(
-                        color: AppColors.surface,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(32)),
                         boxShadow: [
@@ -71,7 +72,9 @@ class ChaletDetailView extends StatelessWidget {
                             height: 4,
                             margin: const EdgeInsets.only(bottom: 20),
                             decoration: BoxDecoration(
-                              color: AppColors.softBlue,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? const Color(0xFF2E2E2E)
+                                  : AppColors.softBlue,
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
@@ -120,18 +123,18 @@ class ChaletDetailView extends StatelessWidget {
                           const SizedBox(height: 24),
                           Container(
                             padding: const EdgeInsets.all(18),
-                            decoration: const BoxDecoration(
-                              gradient: AppColors.cardGradient,
+                            decoration: BoxDecoration(
+                              gradient: AppColors.getCardGradient(context),
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
+                                  const BorderRadius.all(Radius.circular(20)),
                             ),
                             child: Row(
                               children: [
                                 Container(
                                   padding: const EdgeInsets.all(14),
-                                  decoration: const BoxDecoration(
+                                  decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    gradient: AppColors.accentGradient,
+                                    gradient: AppColors.getAccentGradient(context),
                                   ),
                                   child: const Icon(Icons.payments,
                                       color: Colors.white),
@@ -167,10 +170,20 @@ class ChaletDetailView extends StatelessWidget {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    Get.toNamed(
-                                      Routes.bookingStart,
-                                      arguments: chalet,
-                                    );
+                                    final authService = Get.find<AuthService>();
+                                    // Check if user is logged in
+                                    if (!authService.isLoggedIn) {
+                                      // Save the booking start route
+                                      authService.setPendingRoute(Routes.bookingStart);
+                                      // Navigate to login
+                                      Get.toNamed(Routes.login, arguments: chalet);
+                                    } else {
+                                      // User is logged in, proceed to booking
+                                      Get.toNamed(
+                                        Routes.bookingStart,
+                                        arguments: chalet,
+                                      );
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(
@@ -227,8 +240,8 @@ class _ImagesCarousel extends StatelessWidget {
       if (images.isEmpty) {
         return Container(
           height: 320,
-          decoration: const BoxDecoration(
-            gradient: AppColors.cardGradient,
+          decoration: BoxDecoration(
+            gradient: AppColors.getCardGradient(context),
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(36)),
           ),
           alignment: Alignment.center,
@@ -357,7 +370,9 @@ class _InfoBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.softBlue,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF2E2E2E)
+            : AppColors.softBlue,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(

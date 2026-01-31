@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Collection;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ChaletResource extends Resource
 {
@@ -35,6 +36,13 @@ class ChaletResource extends Resource
     protected static ?int $navigationSort = 1;
 
     protected static ?string $navigationGroup = 'إدارة الشاليات';
+
+    // المدير يمكنه رؤية جميع الشاليات (لا يوجد فلترة)
+    public static function getEloquentQuery(): Builder
+    {
+        // المدير يرى كل شيء، لا حاجة للفلترة
+        return parent::getEloquentQuery();
+    }
 
     public static function getNavigationBadge(): ?string
     {
@@ -64,7 +72,7 @@ class ChaletResource extends Resource
                             ->maxLength(255)
                             ->live(onBlur: true)
                             ->afterStateUpdated(fn (string $context, $state, callable $set) =>
-                                $context === 'create' ? $set('slug', \Str::slug($state)) : null
+                                $context === 'create' ? $set('slug', Str::slug($state)) : null
                             ),
                         Forms\Components\TextInput::make('slug')
                             ->label('الرابط')
@@ -303,7 +311,8 @@ class ChaletResource extends Resource
                         ->color('danger')
                         ->action(fn (Collection $records) => $records->each->update(['is_active' => false])),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array

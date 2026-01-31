@@ -122,15 +122,29 @@ class ReviewController extends Controller
             return $this->errorResponse('تم إضافة تقييم لهذا الحجز مسبقاً');
         }
      
+        // Allow review if booking is completed OR if confirmed and check-out date has passed
         $canReview = $booking->status === Booking::STATUS_COMPLETED || (
             $booking->status === Booking::STATUS_CONFIRMED &&
-            $booking->check_out_date instanceof Carbon
-            // &&
-            // $booking->check_out_date->isPast()
+            $booking->check_out_date instanceof Carbon &&
+            $booking->check_out_date->isPast()
         );
 
         if (!$canReview) {
             return $this->errorResponse('لا يمكن إضافة تقييم قبل إكمال الحجز');
+        }
+
+        // Process comment: trim and sanitize, but keep it if not empty
+        $comment = null;
+        if ($request->has('comment') && $request->comment !== null) {
+            $trimmedComment = trim($request->comment);
+            if (!empty($trimmedComment)) {
+                // Remove HTML tags but preserve the text content
+                $comment = strip_tags($trimmedComment);
+                // Trim again after strip_tags in case of whitespace
+                $comment = trim($comment);
+                // Only save if comment is not empty after processing
+                $comment = !empty($comment) ? $comment : null;
+            }
         }
 
         $review = Review::create([
@@ -138,7 +152,7 @@ class ReviewController extends Controller
             'customer_id' => $user->id,
             'booking_id' => $booking->id,
             'rating' => $request->rating,
-            'comment' => $request->comment ? strip_tags($request->comment) : null,
+            'comment' => $comment,
             'is_approved' => false,
         ]);
 

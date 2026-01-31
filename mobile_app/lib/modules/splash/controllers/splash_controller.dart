@@ -16,10 +16,22 @@ class SplashController extends GetxController {
 
   Future<void> _bootstrap() async {
     await Future.delayed(const Duration(milliseconds: 400));
+    
+    // Always go to main page (chalet list) - no login required
+    // Login will be requested when accessing protected pages
     if (authService.isLoggedIn) {
-      Get.offAllNamed(Routes.chaletList);
+      // Check if user can access mobile app (only customers)
+      if (authService.canAccessMobileApp) {
+        Get.offAllNamed(Routes.main);
+      } else {
+        // Admin or Owner should use web panels, not mobile app
+        // Clear session and go to main page
+        await authService.clearSession();
+        Get.offAllNamed(Routes.main);
+      }
     } else {
-      Get.offAllNamed(Routes.login);
+      // Not logged in - go to main page (chalet list) directly
+      Get.offAllNamed(Routes.main);
     }
   }
 }
