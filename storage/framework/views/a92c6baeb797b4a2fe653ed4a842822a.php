@@ -61,7 +61,7 @@
             ])); ?>
 
 >
-    <!--[if BLOCK]><![endif]--><?php if($limitedStateCount): ?>
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($limitedStateCount): ?>
         <div class="flex items-center gap-x-2.5">
             <div
                 class="<?php echo \Illuminate\Support\Arr::toCssClasses([
@@ -81,7 +81,7 @@
                     },
                 ]); ?>"
             >
-                <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $limitedState; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $stateItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $limitedState; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $stateItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <img
                         src="<?php echo e(filled($stateItem) ? ($getImageUrl($stateItem) ?? $defaultImageUrl) : $defaultImageUrl); ?>"
                         <?php echo e($getExtraImgAttributeBag()
@@ -96,9 +96,9 @@
                                 ])); ?>
 
                     />
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                <!--[if BLOCK]><![endif]--><?php if($hasLimitedRemainingText && (! $isLimitedRemainingTextSeparate) && $isCircular): ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasLimitedRemainingText && (! $isLimitedRemainingTextSeparate) && $isCircular): ?>
                     <div
                         class="<?php echo \Illuminate\Support\Arr::toCssClasses([
                             'flex items-center justify-center bg-gray-100 font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400',
@@ -116,10 +116,10 @@
 
                         </span>
                     </div>
-                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
 
-            <!--[if BLOCK]><![endif]--><?php if($hasLimitedRemainingText && ($isLimitedRemainingTextSeparate || (! $isCircular))): ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasLimitedRemainingText && ($isLimitedRemainingTextSeparate || (! $isCircular))): ?>
                 <div
                     class="<?php echo \Illuminate\Support\Arr::toCssClasses([
                         'font-medium text-gray-500 dark:text-gray-400',
@@ -129,7 +129,7 @@
                     +<?php echo e($stateCount - $limitedStateCount); ?>
 
                 </div>
-            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
     <?php elseif(($placeholder = $getPlaceholder()) !== null): ?>
         <?php if (isset($component)) { $__componentOriginal2078c004f342b84f8f2b0f2ab3478754 = $component; } ?>
@@ -154,6 +154,6 @@
 <?php $component = $__componentOriginal2078c004f342b84f8f2b0f2ab3478754; ?>
 <?php unset($__componentOriginal2078c004f342b84f8f2b0f2ab3478754); ?>
 <?php endif; ?>
-    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 </div>
 <?php /**PATH D:\ChaletGo\vendor\filament\tables\resources\views/columns/image-column.blade.php ENDPATH**/ ?>

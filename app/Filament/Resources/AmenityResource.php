@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AmenityResource\Pages;
 use App\Filament\Resources\AmenityResource\RelationManagers;
 use App\Models\Amenity;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -35,6 +36,18 @@ class AmenityResource extends Resource
             ->schema([
                 Forms\Components\Section::make('معلومات المرفق')
                     ->schema([
+                        Forms\Components\Select::make('owner_id')
+                            ->label('المالك')
+                            ->relationship(
+                                name: 'owner',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn ($query) => $query->where('user_type', User::TYPE_OWNER),
+                            )
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->placeholder('اختر المالك')
+                            ->helperText('المالك الذي سيُرتبط به هذا المرفق'),
                         Forms\Components\TextInput::make('name')
                             ->label('اسم المرفق')
                             ->required()
@@ -71,6 +84,11 @@ class AmenityResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('owner.name')
+                    ->label('المالك')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('—'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('اسم المرفق')
                     ->searchable()
@@ -123,6 +141,15 @@ class AmenityResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('owner_id')
+                    ->label('المالك')
+                    ->relationship(
+                        name: 'owner',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn ($query) => $query->where('user_type', User::TYPE_OWNER),
+                    )
+                    ->searchable()
+                    ->preload(),
                 Tables\Filters\SelectFilter::make('category')
                     ->label('الفئة')
                     ->options([

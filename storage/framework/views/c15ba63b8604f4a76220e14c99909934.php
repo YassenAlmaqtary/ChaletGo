@@ -19,6 +19,7 @@
     $suffixIcon = $getSuffixIcon();
     $suffixLabel = $getSuffixLabel();
     $statePath = $getStatePath();
+    $placeholder = $getPlaceholder();
 
     if ($isPasswordRevealable) {
         $xData = '{ isPasswordRevealed: false }';
@@ -89,7 +90,7 @@
                         'maxlength' => (! $isConcealed) ? $getMaxLength() : null,
                         'min' => (! $isConcealed) ? $getMinValue() : null,
                         'minlength' => (! $isConcealed) ? $getMinLength() : null,
-                        'placeholder' => $getPlaceholder(),
+                        'placeholder' => filled($placeholder) ? e($placeholder) : null,
                         'readonly' => $isReadOnly(),
                         'required' => $isRequired() && (! $isConcealed),
                         'step' => $getStep(),
@@ -125,7 +126,7 @@
                         'maxlength' => (! $isConcealed) ? $getMaxLength() : null,
                         'min' => (! $isConcealed) ? $getMinValue() : null,
                         'minlength' => (! $isConcealed) ? $getMinLength() : null,
-                        'placeholder' => $getPlaceholder(),
+                        'placeholder' => filled($placeholder) ? e($placeholder) : null,
                         'readonly' => $isReadOnly(),
                         'required' => $isRequired() && (! $isConcealed),
                         'step' => $getStep(),
@@ -159,13 +160,13 @@
 <?php unset($__componentOriginal505efd9768415fdb4543e8c564dad437); ?>
 <?php endif; ?>
 
-    <!--[if BLOCK]><![endif]--><?php if($datalistOptions): ?>
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($datalistOptions): ?>
         <datalist id="<?php echo e($id); ?>-list">
-            <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $datalistOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $datalistOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <option value="<?php echo e($option); ?>"></option>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </datalist>
-    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal511d4862ff04963c3c16115c05a86a9d)): ?>

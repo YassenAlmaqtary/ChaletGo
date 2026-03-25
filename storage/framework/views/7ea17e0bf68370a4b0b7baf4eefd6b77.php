@@ -48,7 +48,7 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars, $__key, $__value); ?>
 
-<!--[if BLOCK]><![endif]--><?php if(($layout === FiltersLayout::Modal) || $triggerAction->isModalSlideOver()): ?>
+<?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(($layout === FiltersLayout::Modal) || $triggerAction->isModalSlideOver()): ?>
     <?php if (isset($component)) { $__componentOriginal0942a211c37469064369f887ae8d1cef = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal0942a211c37469064369f887ae8d1cef = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'filament::components.modal.index','data' => ['alignment' => $triggerAction->getModalAlignment(),'autofocus' => $triggerAction->isModalAutofocused(),'closeButton' => $triggerAction->hasModalCloseButton(),'closeByClickingAway' => $triggerAction->isModalClosedByClickingAway(),'closeByEscaping' => $triggerAction?->isModalClosedByEscaping(),'description' => $triggerAction->getModalDescription(),'footerActions' => $triggerAction->getVisibleModalFooterActions(),'footerActionsAlignment' => $triggerAction->getModalFooterActionsAlignment(),'heading' => $triggerAction->getCustomModalHeading() ?? __('filament-tables::table.filters.heading'),'icon' => $triggerAction->getModalIcon(),'iconColor' => $triggerAction->getModalIconColor(),'slideOver' => $triggerAction->isModalSlideOver(),'stickyFooter' => $triggerAction->isModalFooterSticky(),'stickyHeader' => $triggerAction->isModalHeaderSticky(),'width' => $width,'wire:key' => ''.e($this->getId()).'.table.filters','attributes' => $attributes->class(['fi-ta-filters-modal'])]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -128,5 +128,5 @@ unset($__defined_vars, $__key, $__value); ?>
 <?php $component = $__componentOriginal22ab0dbc2c6619d5954111bba06f01db; ?>
 <?php unset($__componentOriginal22ab0dbc2c6619d5954111bba06f01db); ?>
 <?php endif; ?>
-<?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+<?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 <?php /**PATH D:\ChaletGo\vendor\filament\tables\resources\views/components/filters/dialog.blade.php ENDPATH**/ ?>

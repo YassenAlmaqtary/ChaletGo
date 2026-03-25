@@ -66,11 +66,11 @@ unset($__defined_vars, $__key, $__value); ?>
 <?php unset($__componentOriginal087b30d649cc1cfb7e9ea8930c92d47d); ?>
 <?php endif; ?>
 
-    <!--[if BLOCK]><![endif]--><?php if(filled($label)): ?>
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(filled($label)): ?>
         <span class="sr-only">
             <?php echo e($label); ?>
 
         </span>
-    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 </label>
 <?php /**PATH D:\ChaletGo\vendor\filament\tables\resources\views/components/selection/checkbox.blade.php ENDPATH**/ ?>

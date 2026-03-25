@@ -64,7 +64,7 @@ unset($__defined_vars, $__key, $__value); ?>
 
     </section>
 
-    <!--[if BLOCK]><![endif]--><?php if(! $this instanceof \Filament\Tables\Contracts\HasTable): ?>
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(! $this instanceof \Filament\Tables\Contracts\HasTable): ?>
         <?php if (isset($component)) { $__componentOriginal028e05680f6c5b1e293abd7fbe5f9758 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal028e05680f6c5b1e293abd7fbe5f9758 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'filament-actions::components.modals','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -85,7 +85,7 @@ unset($__defined_vars, $__key, $__value); ?>
 <?php $component = $__componentOriginal028e05680f6c5b1e293abd7fbe5f9758; ?>
 <?php unset($__componentOriginal028e05680f6c5b1e293abd7fbe5f9758); ?>
 <?php endif; ?>
-    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <?php echo e(\Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::SIMPLE_PAGE_END, scopes: $this->getRenderHookScopes())); ?>
 

@@ -40,7 +40,7 @@ unset($__defined_vars, $__key, $__value); ?>
     $icon = ($alias ? \Filament\Support\Facades\FilamentIcon::resolve($alias) : null) ?: ($icon ?? $slot);
 ?>
 
-<!--[if BLOCK]><![endif]--><?php if($icon instanceof \Illuminate\Contracts\Support\Htmlable): ?>
+<?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($icon instanceof \Illuminate\Contracts\Support\Htmlable): ?>
     <span <?php echo e($attributes->class($class)); ?>>
         <?php echo e($icon); ?>
 
@@ -56,5 +56,5 @@ unset($__defined_vars, $__key, $__value); ?>
     <?php echo e(svg($icon,
         $class,
         array_filter($attributes->getAttributes()),)); ?>
-<?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+<?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 <?php /**PATH D:\ChaletGo\vendor\filament\support\resources\views/components/icon.blade.php ENDPATH**/ ?>

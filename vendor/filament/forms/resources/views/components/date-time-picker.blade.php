@@ -10,6 +10,7 @@
     $isSuffixInline = $isSuffixInline();
     $maxDate = $getMaxDate();
     $minDate = $getMinDate();
+    $defaultFocusedDate = $getDefaultFocusedDate();
     $prefixActions = $getPrefixActions();
     $prefixIcon = $getPrefixIcon();
     $prefixLabel = $getPrefixLabel();
@@ -17,6 +18,7 @@
     $suffixIcon = $getSuffixIcon();
     $suffixLabel = $getSuffixLabel();
     $statePath = $getStatePath();
+    $placeholder = $getPlaceholder();
     $disabledDates = $getDisabledDates();
 @endphp
 
@@ -54,7 +56,7 @@
                             'list' => $datalistOptions ? $id . '-list' : null,
                             'max' => $hasTime ? $maxDate : ($maxDate ? \Carbon\Carbon::parse($maxDate)->toDateString() : null),
                             'min' => $hasTime ? $minDate : ($minDate ? \Carbon\Carbon::parse($minDate)->toDateString() : null),
-                            'placeholder' => $getPlaceholder(),
+                            'placeholder' => filled($placeholder) ? e($placeholder) : null,
                             'readonly' => $isReadOnly(),
                             'required' => $isRequired() && (! $isConcealed()),
                             'step' => $getStep(),
@@ -73,6 +75,7 @@
                 @endif
                 x-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('date-time-picker', 'filament/forms') }}"
                 x-data="dateTimePickerFormComponent({
+                            defaultFocusedDate: @js($defaultFocusedDate),
                             displayFormat:
                                 '{{ convert_date_format($getDisplayFormat())->to('day.js') }}',
                             firstDayOfWeek: {{ $getFirstDayOfWeek() }},
@@ -222,7 +225,7 @@
                                                 ! dayIsSelected(day) &&
                                                 focusedDate.date() !== day &&
                                                 ! dayIsDisabled(day),
-                                            'bg-gray-50 dark:bg-white/5':
+                                            'bg-gray-100 dark:bg-white/10':
                                                 focusedDate.date() === day &&
                                                 ! dayIsSelected(day) &&
                                                 ! dayIsDisabled(day),

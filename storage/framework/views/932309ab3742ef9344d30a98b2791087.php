@@ -2,8 +2,8 @@
     use Filament\Support\Facades\FilamentView;
 ?>
 
-<!--[if BLOCK]><![endif]--><?php if($this->hasUnsavedDataChangesAlert()): ?>
-    <!--[if BLOCK]><![endif]--><?php if(FilamentView::hasSpaMode()): ?>
+<?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->hasUnsavedDataChangesAlert()): ?>
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(FilamentView::hasSpaMode()): ?>
             <?php
         $__scriptKey = '2170057466-0';
         ob_start();
@@ -78,6 +78,6 @@
 
         \Livewire\store($this)->push('scripts', $__output, $__scriptKey)
     ?>
-    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-<?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+<?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 <?php /**PATH D:\ChaletGo\vendor\filament\filament\resources\views/components/page/unsaved-data-changes-alert.blade.php ENDPATH**/ ?>

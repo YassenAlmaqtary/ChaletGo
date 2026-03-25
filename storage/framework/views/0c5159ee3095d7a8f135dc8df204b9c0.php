@@ -53,11 +53,11 @@ foreach ($attributes->all() as $__key => $__value) {
 unset($__defined_vars, $__key, $__value); ?>
 
     <div class="fi-simple-layout flex min-h-screen flex-col items-center">
-        <?php if(($hasTopbar ?? true) && filament()->auth()->check()): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(($hasTopbar ?? true) && filament()->auth()->check()): ?>
             <div
                 class="absolute end-0 top-0 flex h-16 items-center gap-x-4 pe-4 md:pe-6 lg:pe-8"
             >
-                <?php if(filament()->hasDatabaseNotifications()): ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(filament()->hasDatabaseNotifications()): ?>
                     <?php
 $__split = function ($name, $params = []) {
     return [$name, $params];
@@ -66,17 +66,22 @@ $__split = function ($name, $params = []) {
                         'lazy' => filament()->hasLazyLoadedDatabaseNotifications()
                     ]);
 
-$__html = app('livewire')->mount($__name, $__params, 'lw-2692665965-0', $__slots ?? [], get_defined_vars());
+$__key = null;
+
+$__key ??= \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::generateKey('lw-2692665965-0', $__key);
+
+$__html = app('livewire')->mount($__name, $__params, $__key);
 
 echo $__html;
 
 unset($__html);
+unset($__key);
 unset($__name);
 unset($__params);
 unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
-                <?php endif; ?>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                 <?php if (isset($component)) { $__componentOriginalf72c4437b846e6919081d8fc29939c50 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalf72c4437b846e6919081d8fc29939c50 = $attributes; } ?>
@@ -99,7 +104,7 @@ if (isset($__slots)) unset($__slots);
 <?php unset($__componentOriginalf72c4437b846e6919081d8fc29939c50); ?>
 <?php endif; ?>
             </div>
-        <?php endif; ?>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         <div
             class="fi-simple-main-ctn flex w-full flex-grow items-center justify-center"

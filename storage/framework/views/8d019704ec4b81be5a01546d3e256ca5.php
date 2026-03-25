@@ -96,7 +96,7 @@ unset($__defined_vars, $__key, $__value); ?>
             'bg-gray-100 dark:bg-white/5' => $active,
         ]); ?>"
     >
-        <?php if(filled($icon) && ((! $subGrouped) || $sidebarCollapsible)): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(filled($icon) && ((! $subGrouped) || $sidebarCollapsible)): ?>
             <?php if (isset($component)) { $__componentOriginalbfc641e0710ce04e5fe02876ffc6f950 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalbfc641e0710ce04e5fe02876ffc6f950 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'filament::components.icon','data' => ['icon' => ($active && $activeIcon) ? $activeIcon : $icon,'xShow' => ($subGrouped && $sidebarCollapsible) ? '! $store.sidebar.isOpen' : false,'class' => \Illuminate\Support\Arr::toCssClasses([
@@ -125,26 +125,26 @@ unset($__defined_vars, $__key, $__value); ?>
 <?php $component = $__componentOriginalbfc641e0710ce04e5fe02876ffc6f950; ?>
 <?php unset($__componentOriginalbfc641e0710ce04e5fe02876ffc6f950); ?>
 <?php endif; ?>
-        <?php endif; ?>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-        <?php if((blank($icon) && $grouped) || $subGrouped): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if((blank($icon) && $grouped) || $subGrouped): ?>
             <div
                 <?php if(filled($icon) && $subGrouped && $sidebarCollapsible): ?>
                     x-show="$store.sidebar.isOpen"
                 <?php endif; ?>
                 class="fi-sidebar-item-grouped-border relative flex h-6 w-6 items-center justify-center"
             >
-                <?php if(! $first): ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(! $first): ?>
                     <div
                         class="absolute -top-1/2 bottom-1/2 w-px bg-gray-300 dark:bg-gray-600"
                     ></div>
-                <?php endif; ?>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                <?php if(! $last): ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(! $last): ?>
                     <div
                         class="absolute -bottom-1/2 top-1/2 w-px bg-gray-300 dark:bg-gray-600"
                     ></div>
-                <?php endif; ?>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                 <div
                     class="<?php echo \Illuminate\Support\Arr::toCssClasses([
@@ -154,7 +154,7 @@ unset($__defined_vars, $__key, $__value); ?>
                     ]); ?>"
                 ></div>
             </div>
-        <?php endif; ?>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         <span
             <?php if($sidebarCollapsible): ?>
@@ -173,7 +173,7 @@ unset($__defined_vars, $__key, $__value); ?>
 
         </span>
 
-        <?php if(filled($badge)): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(filled($badge)): ?>
             <span
                 <?php if($sidebarCollapsible): ?>
                     x-show="$store.sidebar.isOpen"
@@ -205,12 +205,12 @@ unset($__defined_vars, $__key, $__value); ?>
 <?php unset($__componentOriginal986dce9114ddce94a270ab00ce6c273d); ?>
 <?php endif; ?>
             </span>
-        <?php endif; ?>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </a>
 
-    <?php if(($active || $activeChildItems) && $childItems): ?>
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(($active || $activeChildItems) && $childItems): ?>
         <ul class="fi-sidebar-sub-group-items flex flex-col gap-y-1">
-            <?php $__currentLoopData = $childItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $childItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $childItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $childItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <?php if (isset($component)) { $__componentOriginal7edbc33aaa546e1feb86647dcd0e4eb8 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal7edbc33aaa546e1feb86647dcd0e4eb8 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'filament-panels::components.sidebar.item','data' => ['active' => $childItem->isActive(),'activeChildItems' => $childItem->isChildItemsActive(),'activeIcon' => $childItem->getActiveIcon(),'badge' => $childItem->getBadge(),'badgeColor' => $childItem->getBadgeColor(),'badgeTooltip' => $childItem->getBadgeTooltip(),'first' => $loop->first,'grouped' => true,'icon' => $childItem->getIcon(),'last' => $loop->last,'shouldOpenUrlInNewTab' => $childItem->shouldOpenUrlInNewTab(),'subGrouped' => true,'url' => $childItem->getUrl()]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -233,8 +233,8 @@ unset($__defined_vars, $__key, $__value); ?>
 <?php $component = $__componentOriginal7edbc33aaa546e1feb86647dcd0e4eb8; ?>
 <?php unset($__componentOriginal7edbc33aaa546e1feb86647dcd0e4eb8); ?>
 <?php endif; ?>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </ul>
-    <?php endif; ?>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 </li>
 <?php /**PATH D:\ChaletGo\vendor\filament\filament\resources\views/components/sidebar/item.blade.php ENDPATH**/ ?>
