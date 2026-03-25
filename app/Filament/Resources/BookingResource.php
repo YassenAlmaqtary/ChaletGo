@@ -29,6 +29,13 @@ class BookingResource extends Resource
 
     protected static ?string $navigationGroup = 'إدارة الحجوزات';
 
+    // المدير يمكنه رؤية جميع الحجوزات (لا يوجد فلترة)
+    public static function getEloquentQuery(): Builder
+    {
+        // المدير يرى كل شيء، لا حاجة للفلترة
+        return parent::getEloquentQuery();
+    }
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::where('status', 'pending')->count();
@@ -129,7 +136,7 @@ class BookingResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('المبلغ الإجمالي')
-                    ->money('YR')
+                    ->money('SAR')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_paid')
                     ->label('مدفوع')
@@ -233,7 +240,8 @@ class BookingResource extends Resource
                     Tables\Actions\DeleteBulkAction::make()
                         ->label('حذف المحدد'),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array

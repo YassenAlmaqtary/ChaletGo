@@ -235,7 +235,7 @@ class _StatusChip extends StatelessWidget {
     return Align(
       alignment: Alignment.centerRight,
       child: Chip(
-        label: Text(statusLabel.isEmpty ? 'غير محدد' : statusLabel),
+        label: Text(statusLabel.isEmpty ? 'undefined'.tr : statusLabel),
         backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
         labelStyle: TextStyle(
           color: Theme.of(context).colorScheme.primary,

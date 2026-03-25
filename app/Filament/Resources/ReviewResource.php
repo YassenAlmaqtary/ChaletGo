@@ -13,6 +13,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewResource extends Resource
 {
@@ -57,7 +58,7 @@ class ReviewResource extends Resource
 
     protected static function currentUserIsAdmin(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return Auth::check() && Auth::user()->isAdmin();
     }
 
     public static function getNavigationBadge(): ?string
@@ -241,7 +242,8 @@ class ReviewResource extends Resource
                         ->action(fn ($records) => $records->each->update(['is_approved' => false]))
                         ->visible(fn () => static::currentUserIsAdmin()),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array

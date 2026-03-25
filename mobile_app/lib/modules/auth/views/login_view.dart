@@ -27,10 +27,10 @@ class LoginView extends StatelessWidget {
                     controller: controller.loginEmailCtrl,
                     keyboardType: TextInputType.emailAddress,
                     decoration:
-                        const InputDecoration(labelText: 'البريد الإلكتروني'),
+                        InputDecoration(labelText: 'email'.tr),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'الرجاء إدخال البريد الإلكتروني';
+                        return 'please_enter_email'.tr;
                       }
                       return null;
                     },
@@ -40,7 +40,7 @@ class LoginView extends StatelessWidget {
                         controller: controller.loginPasswordCtrl,
                         obscureText: controller.loginObscure.value,
                         decoration: InputDecoration(
-                          labelText: 'كلمة المرور',
+                          labelText: 'password'.tr,
                           suffixIcon: IconButton(
                             icon: Icon(controller.loginObscure.value
                                 ? Icons.visibility
@@ -50,7 +50,7 @@ class LoginView extends StatelessWidget {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'الرجاء إدخال كلمة المرور';
+                            return 'please_enter_password'.tr;
                           }
                           return null;
                         },
@@ -82,12 +82,12 @@ class LoginView extends StatelessWidget {
                                   child: CircularProgressIndicator(
                                       strokeWidth: 2, color: Colors.white),
                                 )
-                              : const Text('تسجيل الدخول'),
+                              : Text('login'.tr),
                         ),
                       )),
                   TextButton(
                     onPressed: () => Get.toNamed('/register'),
-                    child: const Text('مستخدم جديد؟ إنشاء حساب'),
+                    child: Text('new_user'.tr),
                   ),
                 ],
               ),

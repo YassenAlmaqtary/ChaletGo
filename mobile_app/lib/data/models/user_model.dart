@@ -13,6 +13,14 @@ class UserModel {
     required this.userType,
   });
 
+  // Helper methods for user type checking
+  bool get isAdmin => userType == 'admin';
+  bool get isOwner => userType == 'owner';
+  bool get isCustomer => userType == 'customer';
+
+  // Check if user can access mobile app (only customers)
+  bool get canAccessMobileApp => isCustomer;
+
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'] as int,

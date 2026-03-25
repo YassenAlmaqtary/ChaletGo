@@ -33,8 +33,8 @@ Route::get('chalets', [ChaletController::class, 'index']);
 Route::get('chalets/{chalet:slug}', [ChaletController::class, 'show']);
 Route::get('chalets/{chalet:slug}/availability', [ChaletController::class, 'checkAvailability']);
 
-// Protected routes
-Route::middleware('auth:api')->group(function () {
+// Protected routes - Mobile app routes (customers only)
+Route::middleware(['auth:api', 'customer.only'])->group(function () {
     // Auth routes
     Route::prefix('auth')->group(function () {
         Route::get('profile', [AuthController::class, 'profile']);
@@ -55,27 +55,41 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('chalets/{chalet:slug}/images/{image}', [ChaletImageController::class, 'destroy']);
     Route::put('chalets/{chalet:slug}/images/reorder', [ChaletImageController::class, 'reorder']);
 
-    // Bookings routes
-    Route::middleware('auth:api')->group(function () {
-            Route::apiResource('bookings', BookingController::class)->except(['update', 'destroy']);
-            Route::put('bookings/{booking}/status', [BookingController::class, 'update']);
-            Route::put('bookings/{booking}/cancel', [BookingController::class, 'cancel']);
-            Route::get('owner/bookings', [BookingController::class, 'ownerBookings']);
-    });
-    // Reviews routes
+    // Bookings routes (customers only)
+    Route::apiResource('bookings', BookingController::class)->except(['update', 'destroy']);
+    Route::put('bookings/{booking}/cancel', [BookingController::class, 'cancel']);
+    
+    // Reviews routes (customers only)
     Route::apiResource('reviews', ReviewController::class)->only(['index', 'store', 'show']);
 
-    // Payment routes
-    Route::middleware('auth:api')->group(function () {
-        Route::post('bookings/{booking}/payment', [PaymentController::class, 'processPayment']);
-        Route::get('payments', [PaymentController::class, 'getPayments']);
-        Route::get('payments/{payment}', [PaymentController::class, 'getPayment']);
-    });
+    // Payment routes (customers only)
+    Route::post('bookings/{booking}/payment', [PaymentController::class, 'processPayment']);
+    Route::get('payments', [PaymentController::class, 'getPayments']);
+    Route::get('payments/{payment}', [PaymentController::class, 'getPayment']);
 
-    // Refund routes
+    // Refund routes (customers can request refunds)
     Route::post('payments/{payment}/refund', [RefundController::class, 'processRefund']);
     Route::get('payments/{payment}/refunds', [RefundController::class, 'getRefunds']);
     Route::get('refund-policies', [RefundController::class, 'getRefundPolicies']);
+});
+
+// Owner/Admin API routes (separate from mobile app)
+Route::middleware(['auth:api', 'user.type:owner'])->group(function () {
+    // Owner-specific routes
+    Route::get('owner/bookings', [BookingController::class, 'ownerBookings']);
+    Route::get('my-chalets', [ChaletController::class, 'myCharets']);
+    Route::post('chalets', [ChaletController::class, 'store']);
+    Route::put('chalets/{chalet:slug}', [ChaletController::class, 'update']);
+    Route::delete('chalets/{chalet:slug}', [ChaletController::class, 'destroy']);
+    
+    // Chalet Images routes (owners only)
+    Route::post('chalets/{chalet:slug}/images', [ChaletImageController::class, 'store']);
+    Route::put('chalets/{chalet:slug}/images/{image}', [ChaletImageController::class, 'update']);
+    Route::delete('chalets/{chalet:slug}/images/{image}', [ChaletImageController::class, 'destroy']);
+    Route::put('chalets/{chalet:slug}/images/reorder', [ChaletImageController::class, 'reorder']);
+    
+    // Booking status update (owners only)
+    Route::put('bookings/{booking}/status', [BookingController::class, 'update']);
 });
 
 // Webhook routes (no authentication required)

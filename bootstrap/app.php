@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'user.type' => \App\Http\Middleware\CheckUserType::class,
+            'customer.only' => \App\Http\Middleware\EnsureCustomerOnly::class,
             'locale' => \App\Http\Middleware\SetLocale::class,
             'rate.limit' => \App\Http\Middleware\RateLimitMiddleware::class,
             'security.headers' => \App\Http\Middleware\SecurityHeadersMiddleware::class,

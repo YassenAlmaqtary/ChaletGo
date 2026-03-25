@@ -8,6 +8,7 @@ import '../../data/providers/review_provider.dart';
 import '../../modules/auth/controllers/auth_controller.dart';
 import '../../modules/chalets/controllers/chalet_controller.dart';
 import '../../modules/chalets/controllers/chalet_detail_controller.dart';
+import '../../modules/booking/controllers/booking_list_controller.dart';
 import '../services/auth_service.dart';
 import '../services/dio_client.dart';
 import '../../modules/profile/controllers/profile_controller.dart';
@@ -40,5 +41,9 @@ class InitialBinding extends Bindings {
     Get.lazyPut<ChaletDetailController>(
         () => ChaletDetailController(Get.find()),
         fenix: true);
+    Get.lazyPut<BookingListController>(
+        () => BookingListController(Get.find<BookingProvider>()),
+        fenix: true);
+    // Language and Theme controllers are already initialized in main.dart
   }
 }

@@ -25,10 +25,10 @@ class RegisterView extends StatelessWidget {
                   TextFormField(
                     controller: controller.registerNameCtrl,
                     decoration:
-                        const InputDecoration(labelText: 'الاسم الكامل'),
+                        InputDecoration(labelText: 'full_name'.tr),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'الرجاء إدخال الاسم';
+                        return 'please_enter_name'.tr;
                       }
                       return null;
                     },
@@ -37,11 +37,11 @@ class RegisterView extends StatelessWidget {
                   TextFormField(
                     controller: controller.registerEmailCtrl,
                     decoration:
-                        const InputDecoration(labelText: 'البريد الإلكتروني'),
+                        InputDecoration(labelText: 'email'.tr),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'الرجاء إدخال البريد الإلكتروني';
+                        return 'please_enter_email'.tr;
                       }
                       return null;
                     },
@@ -49,19 +49,19 @@ class RegisterView extends StatelessWidget {
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: controller.registerPhoneCtrl,
-                    decoration: const InputDecoration(
-                        labelText: 'رقم الجوال (اختياري)'),
+                    decoration: InputDecoration(
+                        labelText: 'phone_optional'.tr),
                   ),
                   const SizedBox(height: 12),
                   Obx(() => DropdownButtonFormField<String>(
                         decoration:
-                            const InputDecoration(labelText: 'نوع المستخدم'),
+                            InputDecoration(labelText: 'user_type'.tr),
                         value: controller.registerUserType.value,
-                        items: const [
+                        items: [
                           DropdownMenuItem(
-                              value: 'customer', child: Text('عميل')),
+                              value: 'customer', child: Text('customer'.tr)),
                           DropdownMenuItem(
-                              value: 'owner', child: Text('مالك شاليه')),
+                              value: 'owner', child: Text('owner'.tr)),
                         ],
                         onChanged: (value) {
                           if (value != null) {
@@ -74,7 +74,7 @@ class RegisterView extends StatelessWidget {
                         controller: controller.registerPasswordCtrl,
                         obscureText: controller.registerObscure.value,
                         decoration: InputDecoration(
-                          labelText: 'كلمة المرور',
+                          labelText: 'password'.tr,
                           suffixIcon: IconButton(
                             icon: Icon(controller.registerObscure.value
                                 ? Icons.visibility
@@ -85,7 +85,7 @@ class RegisterView extends StatelessWidget {
                         ),
                         validator: (value) {
                           if (value == null || value.length < 8) {
-                            return 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
+                            return 'password_min_length'.tr;
                           }
                           return null;
                         },
@@ -95,7 +95,7 @@ class RegisterView extends StatelessWidget {
                         controller: controller.registerPasswordConfirmCtrl,
                         obscureText: controller.registerConfirmObscure.value,
                         decoration: InputDecoration(
-                          labelText: 'تأكيد كلمة المرور',
+                          labelText: 'confirm_password'.tr,
                           suffixIcon: IconButton(
                             icon: Icon(controller.registerConfirmObscure.value
                                 ? Icons.visibility
@@ -106,7 +106,7 @@ class RegisterView extends StatelessWidget {
                         ),
                         validator: (value) {
                           if (value != controller.registerPasswordCtrl.text) {
-                            return 'كلمتا المرور غير متطابقتين';
+                            return 'passwords_not_match'.tr;
                           }
                           return null;
                         },
@@ -138,12 +138,12 @@ class RegisterView extends StatelessWidget {
                                   child: CircularProgressIndicator(
                                       strokeWidth: 2, color: Colors.white),
                                 )
-                              : const Text('إنشاء حساب'),
+                              : Text('register'.tr),
                         ),
                       )),
                   TextButton(
                     onPressed: () => Get.toNamed('/login'),
-                    child: const Text('لديك حساب؟ تسجيل الدخول'),
+                    child: Text('have_account'.tr),
                   )
                 ],
               ),

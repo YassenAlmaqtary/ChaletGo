@@ -38,7 +38,6 @@ class BookingController extends GetxController {
   final cvcCtrl = TextEditingController();
 
   final currentBooking = Rxn<BookingModel>();
-  bool _isDisposed = false;
 
   late final List<BookingExtraOption> extraOptions = [
     BookingExtraOption(
@@ -123,42 +122,54 @@ class BookingController extends GetxController {
   String get checkOutDisplay => _formatDate(endDate.value);
 
   Future<void> goToSummary() async {
+    if (isClosed) return;
     bookingError.value = '';
     final valid = await _validateInitialStep();
-    if (!valid) return;
+    if (!valid || isClosed) return;
     Get.toNamed(Routes.bookingSummary);
   }
 
   Future<bool> _validateInitialStep() async {
+    if (isClosed) return false;
+    
     final start = startDate.value;
     final end = endDate.value;
 
     if (start == null || end == null) {
-      bookingError.value = 'يرجى اختيار تواريخ الوصول والمغادرة';
-      Get.snackbar('تنبيه', bookingError.value);
+      if (!isClosed) {
+        bookingError.value = 'يرجى اختيار تواريخ الوصول والمغادرة';
+        Get.snackbar('تنبيه', bookingError.value);
+      }
       return false;
     }
 
     if (!end.isAfter(start)) {
-      bookingError.value = 'تاريخ المغادرة يجب أن يكون بعد تاريخ الوصول';
-      Get.snackbar('تنبيه', bookingError.value);
+      if (!isClosed) {
+        bookingError.value = 'تاريخ المغادرة يجب أن يكون بعد تاريخ الوصول';
+        Get.snackbar('تنبيه', bookingError.value);
+      }
       return false;
     }
 
     if (guests.value > chalet.maxGuests) {
-      bookingError.value =
-          'عدد الضيوف يتجاوز الحد الأقصى (${chalet.maxGuests})';
-      Get.snackbar('تنبيه', bookingError.value);
+      if (!isClosed) {
+        bookingError.value =
+            'عدد الضيوف يتجاوز الحد الأقصى (${chalet.maxGuests})';
+        Get.snackbar('تنبيه', bookingError.value);
+      }
       return false;
     }
 
     if (nights <= 0) {
-      bookingError.value = 'الرجاء اختيار مدة إقامة صحيحة';
-      Get.snackbar('تنبيه', bookingError.value);
+      if (!isClosed) {
+        bookingError.value = 'الرجاء اختيار مدة إقامة صحيحة';
+        Get.snackbar('تنبيه', bookingError.value);
+      }
       return false;
     }
 
     try {
+      if (isClosed) return false;
       isCheckingAvailability.value = true;
       availabilityMessage.value = '';
       final response = await _chaletProvider.checkAvailability(
@@ -167,6 +178,8 @@ class BookingController extends GetxController {
         checkOutDate: DateFormat('yyyy-MM-dd').format(end),
       );
 
+      if (isClosed) return false;
+
       final success = response['success'] == true;
       final data = response['data'] as Map<String, dynamic>?;
       final available = data?['available'] == true;
@@ -174,41 +187,52 @@ class BookingController extends GetxController {
       availabilityMessage.value = response['message']?.toString() ?? '';
 
       if (!success || !available) {
-        bookingError.value = availabilityMessage.value.isNotEmpty
-            ? availabilityMessage.value
-            : 'الشاليه غير متاح في هذه التواريخ';
-        Get.snackbar('تنبيه', bookingError.value);
+        if (!isClosed) {
+          bookingError.value = availabilityMessage.value.isNotEmpty
+              ? availabilityMessage.value
+              : 'الشاليه غير متاح في هذه التواريخ';
+          Get.snackbar('تنبيه', bookingError.value);
+        }
         return false;
       }
     } catch (e) {
       print("Error checking availability: $e");
-      bookingError.value = 'تعذر التحقق من التوفر حالياً';
-      Get.snackbar('تنبيه', bookingError.value);
+      if (!isClosed) {
+        bookingError.value = 'تعذر التحقق من التوفر حالياً';
+        Get.snackbar('تنبيه', bookingError.value);
+      }
       return false;
     } finally {
-      isCheckingAvailability.value = false;
+      if (!isClosed) {
+        isCheckingAvailability.value = false;
+      }
     }
 
     return true;
   }
 
   Future<void> confirmBooking() async {
+    if (isClosed) return;
+    
     final start = startDate.value;
     final end = endDate.value;
     if (start == null || end == null) {
-      bookingError.value = 'يرجى اختيار التواريخ أولاً';
-      Get.snackbar('تنبيه', bookingError.value);
+      if (!isClosed) {
+        bookingError.value = 'يرجى اختيار التواريخ أولاً';
+        Get.snackbar('تنبيه', bookingError.value);
+      }
       return;
     }
 
+    if (isClosed) return;
+    if (isClosed) return;
+    final specialRequests = specialRequestsCtrl.text.trim();
     final payload = {
       'chalet_id': chalet.id,
       'check_in_date': DateFormat('yyyy-MM-dd').format(start),
       'check_out_date': DateFormat('yyyy-MM-dd').format(end),
       'guests_count': guests.value,
-      'special_requests': specialRequestsCtrl.text.trim().isEmpty
-          ? null
-          : specialRequestsCtrl.text.trim(),
+      'special_requests': specialRequests.isEmpty ? null : specialRequests,
       'extras': selectedExtras.map((e) => e.toPayload()).toList(),
     };
 
@@ -217,6 +241,9 @@ class BookingController extends GetxController {
 
     try {
       final response = await _bookingProvider.createBooking(payload);
+      
+      if (isClosed) return;
+      
       if (response['success'] == true) {
         final data = response['data'] as Map<String, dynamic>?;
         if (data != null) {
@@ -227,22 +254,32 @@ class BookingController extends GetxController {
       }
 
       final message = response['message']?.toString() ?? 'تعذر إنشاء الحجز';
-      bookingError.value = message;
-      Get.snackbar('خطأ', message);
+      if (!isClosed) {
+        bookingError.value = message;
+        Get.snackbar('خطأ', message);
+      }
     } catch (e) {
-      bookingError.value = 'حدث خطأ أثناء إنشاء الحجز';
-      Get.snackbar('خطأ', bookingError.value);
+      if (!isClosed) {
+        bookingError.value = 'حدث خطأ أثناء إنشاء الحجز';
+        Get.snackbar('خطأ', bookingError.value);
+      }
     } finally {
-      isSubmittingBooking.value = false;
+      if (!isClosed) {
+        isSubmittingBooking.value = false;
+      }
     }
   }
 
   Future<void> submitPayment() async {
+    if (isClosed) return;
+    
     final booking = currentBooking.value;
 
     if (booking == null) {
-      paymentError.value = 'لا يوجد حجز صالح للدفع';
-      Get.snackbar('تنبيه', paymentError.value);
+      if (!isClosed) {
+        paymentError.value = 'لا يوجد حجز صالح للدفع';
+        Get.snackbar('تنبيه', paymentError.value);
+      }
       return;
     }
 
@@ -253,6 +290,7 @@ class BookingController extends GetxController {
     };
 
     if (method == 'credit_card') {
+      if (isClosed) return;
       final month = int.tryParse(expiryMonthCtrl.text.trim());
       final year = int.tryParse(expiryYearCtrl.text.trim());
       payload.addAll({
@@ -273,12 +311,15 @@ class BookingController extends GetxController {
           'WALLET-${DateTime.now().millisecondsSinceEpoch}';
     }
 
+    if (isClosed) return;
     paymentError.value = '';
     isProcessingPayment.value = true;
 
     try {
       final response =
           await _bookingProvider.payForBooking(booking.id, payload);
+
+      if (isClosed) return;
 
       final success = response['success'] == true;
       final message = response['message']?.toString() ??
@@ -294,7 +335,9 @@ class BookingController extends GetxController {
           },
         );
       } else {
-        paymentError.value = message;
+        if (!isClosed) {
+          paymentError.value = message;
+        }
         Get.toNamed(
           Routes.paymentResult,
           arguments: {
@@ -305,7 +348,9 @@ class BookingController extends GetxController {
       }
     } catch (e) {
       print("Payment error: $e");
-      paymentError.value = 'حدث خطأ أثناء معالجة الدفع';
+      if (!isClosed) {
+        paymentError.value = 'حدث خطأ أثناء معالجة الدفع';
+      }
       Get.toNamed(
         Routes.paymentResult,
         arguments: {
@@ -314,18 +359,22 @@ class BookingController extends GetxController {
         },
       );
     } finally {
-      isProcessingPayment.value = false;
+      if (!isClosed) {
+        isProcessingPayment.value = false;
+      }
     }
   }
 
   void resetFlow() {
-    if (_isDisposed) {
+    if (isClosed) {
       return;
     }
     startDate.value = null;
     endDate.value = null;
     guests.value = 1;
-    specialRequestsCtrl.clear();
+    if (!isClosed) {
+      specialRequestsCtrl.clear();
+    }
     bookingError.value = '';
     availabilityMessage.value = '';
     currentBooking.value = null;
@@ -333,16 +382,17 @@ class BookingController extends GetxController {
       option.selected.value = false;
     }
     paymentMethod.value = 'cash';
-    cardNumberCtrl.clear();
-    cardHolderCtrl.clear();
-    expiryMonthCtrl.clear();
-    expiryYearCtrl.clear();
-    cvcCtrl.clear();
+    if (!isClosed) {
+      cardNumberCtrl.clear();
+      cardHolderCtrl.clear();
+      expiryMonthCtrl.clear();
+      expiryYearCtrl.clear();
+      cvcCtrl.clear();
+    }
   }
 
   @override
   void onClose() {
-    _isDisposed = true;
     specialRequestsCtrl.dispose();
     cardNumberCtrl.dispose();
     cardHolderCtrl.dispose();

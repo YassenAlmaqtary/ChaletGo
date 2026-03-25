@@ -21,7 +21,7 @@
                     extract($args, EXTR_SKIP);
                     ob_start(); ?>
         
-    <?php if($logo instanceof \Illuminate\Contracts\Support\Htmlable): ?>
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($logo instanceof \Illuminate\Contracts\Support\Htmlable): ?>
         <div
             <?php echo e($attributes
                     ->class([$getLogoClasses($isDarkMode)])
@@ -51,7 +51,7 @@
             <?php echo e($brandName); ?>
 
         </div>
-    <?php endif; ?>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
             <?php return new \Illuminate\Support\HtmlString(ob_get_clean()); };
                 })(get_defined_vars()); ?>
@@ -60,8 +60,8 @@
 <?php echo e($content($brandLogo)); ?>
 
 
-<?php if($hasDarkModeBrandLogo): ?>
+<?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasDarkModeBrandLogo): ?>
     <?php echo e($content($darkModeBrandLogo, isDarkMode: true)); ?>
 
-<?php endif; ?>
+<?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 <?php /**PATH D:\ChaletGo\vendor\filament\filament\resources\views/components/logo.blade.php ENDPATH**/ ?>

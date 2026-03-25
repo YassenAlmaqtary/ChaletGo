@@ -120,7 +120,7 @@
             },
         ]); ?>"
     >
-        <!--[if BLOCK]><![endif]--><?php if($icon = $getIcon()): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($icon = $getIcon()): ?>
             <?php if (isset($component)) { $__componentOriginalf02cb4921775e86c03ae335599adc986 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalf02cb4921775e86c03ae335599adc986 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'filament-notifications::components.icon','data' => ['color' => $getIconColor(),'icon' => $icon,'size' => $getIconSize()]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -141,10 +141,10 @@
 <?php $component = $__componentOriginalf02cb4921775e86c03ae335599adc986; ?>
 <?php unset($__componentOriginalf02cb4921775e86c03ae335599adc986); ?>
 <?php endif; ?>
-        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         <div class="mt-0.5 grid flex-1">
-            <!--[if BLOCK]><![endif]--><?php if($hasTitle): ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasTitle): ?>
                 <?php if (isset($component)) { $__componentOriginal7db3daa6cb21d2d6e134a68caddc4280 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal7db3daa6cb21d2d6e134a68caddc4280 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'filament-notifications::components.title','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -167,9 +167,9 @@
 <?php $component = $__componentOriginal7db3daa6cb21d2d6e134a68caddc4280; ?>
 <?php unset($__componentOriginal7db3daa6cb21d2d6e134a68caddc4280); ?>
 <?php endif; ?>
-            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-            <!--[if BLOCK]><![endif]--><?php if($hasDate): ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasDate): ?>
                 <?php if (isset($component)) { $__componentOriginal3148f3d244bda71926d7f1c92697ed87 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal3148f3d244bda71926d7f1c92697ed87 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'filament-notifications::components.date','data' => ['class' => \Illuminate\Support\Arr::toCssClasses(['mt-1' => $hasTitle])]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -192,9 +192,9 @@
 <?php $component = $__componentOriginal3148f3d244bda71926d7f1c92697ed87; ?>
 <?php unset($__componentOriginal3148f3d244bda71926d7f1c92697ed87); ?>
 <?php endif; ?>
-            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-            <!--[if BLOCK]><![endif]--><?php if($hasBody): ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasBody): ?>
                 <?php if (isset($component)) { $__componentOriginal27460770b0e710a69ee227f4482c43ef = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal27460770b0e710a69ee227f4482c43ef = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'filament-notifications::components.body','data' => ['class' => \Illuminate\Support\Arr::toCssClasses(['mt-1' => $hasTitle || $hasDate])]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -217,9 +217,9 @@
 <?php $component = $__componentOriginal27460770b0e710a69ee227f4482c43ef; ?>
 <?php unset($__componentOriginal27460770b0e710a69ee227f4482c43ef); ?>
 <?php endif; ?>
-            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-            <!--[if BLOCK]><![endif]--><?php if($actions = $getActions()): ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($actions = $getActions()): ?>
                 <?php if (isset($component)) { $__componentOriginalab02eb41cb8d8c4163c985cb21a53002 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalab02eb41cb8d8c4163c985cb21a53002 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'filament-notifications::components.actions','data' => ['actions' => $actions,'class' => \Illuminate\Support\Arr::toCssClasses(['mt-3' => $hasTitle || $hasDate || $hasBody])]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -240,7 +240,7 @@
 <?php $component = $__componentOriginalab02eb41cb8d8c4163c985cb21a53002; ?>
 <?php unset($__componentOriginalab02eb41cb8d8c4163c985cb21a53002); ?>
 <?php endif; ?>
-            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
 
         <?php if (isset($component)) { $__componentOriginal5bcde53997b77b5ac492fb6b61c26c09 = $component; } ?>

@@ -45,7 +45,7 @@ class ImagesRelationManager extends RelationManager
                     ->label('صورة رئيسية')
                     ->afterStateUpdated(function ($state, $record) {
                         if ($state && $record) {
-                            // Remove primary from other images
+                            // إلغاء الصورة الرئيسية من الصور الأخرى
                             $record->chalet->images()
                                 ->where('id', '!=', $record->id)
                                 ->update(['is_primary' => false]);
@@ -110,16 +110,16 @@ class ImagesRelationManager extends RelationManager
                     ->icon('heroicon-o-star')
                     ->color('warning')
                     ->action(function ($record) {
-                        // Remove primary from all images
+                        // إلغاء الصورة الرئيسية من جميع الصور
                         $record->chalet->images()->update(['is_primary' => false]);
-                        // Set this as primary
+                        // تعيين هذه الصورة كرئيسية
                         $record->update(['is_primary' => true]);
                     })
                     ->visible(fn ($record) => !$record->is_primary),
                 Tables\Actions\DeleteAction::make()
                     ->label('حذف')
                     ->before(function ($record) {
-                        // Delete file from storage
+                        // حذف الملف من التخزين
                         if ($record->image_path && Storage::disk('public')->exists($record->image_path)) {
                             Storage::disk('public')->delete($record->image_path);
                         }

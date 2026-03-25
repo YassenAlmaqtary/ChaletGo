@@ -18,7 +18,7 @@ class BookingsChart extends ChartWidget
         $months = [];
         $bookingCounts = [];
 
-        // Get last 12 months data
+        // الحصول على بيانات آخر 12 شهر
         for ($i = 11; $i >= 0; $i--) {
             $month = $now->copy()->subMonths($i);
             $months[] = $month->format('M Y');

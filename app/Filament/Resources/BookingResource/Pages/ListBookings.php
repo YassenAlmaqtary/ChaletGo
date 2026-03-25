@@ -13,8 +13,8 @@ class ListBookings extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
-                ->label('إضافة حجز'),
+            // Actions\CreateAction::make()
+            //     ->label('إضافة حجز'),
         ];
     }
 

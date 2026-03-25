@@ -8,8 +8,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Chalet;
+use App\Models\Booking;
+use App\Models\Review;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable implements JWTSubject, FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -113,5 +119,46 @@ class User extends Authenticatable implements JWTSubject
     public function isCustomer()
     {
         return $this->user_type === self::TYPE_CUSTOMER;
+    }
+
+    /**
+     * Determine if the user can access the given Filament panel.
+     *
+     * Best practice:
+     *  - Admin panel: Only system admins can access.
+     *  - Owner panel: Only chalet owners can access.
+     *  - Customers: Can only access through the API / mobile app.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return match ($panel->getId()) {
+            'admin' => $this->isAdmin(),
+            'owner' => $this->isOwner(),
+            default => false,
+        };
+    }
+
+    /**
+     * Get the chalets owned by this user (for owners)
+     */
+    public function chalets(): HasMany
+    {
+        return $this->hasMany(Chalet::class, 'owner_id');
+    }
+
+    /**
+     * Get the bookings made by this user (for customers)
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class, 'customer_id');
+    }
+
+    /**
+     * Get the reviews made by this user (for customers)
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class, 'customer_id');
     }
 }

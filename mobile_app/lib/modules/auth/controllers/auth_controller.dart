@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../data/models/user_model.dart';
 import '../../../data/providers/auth_provider.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/controllers/main_controller.dart';
 import '../../../routes/app_pages.dart';
 
 class AuthController extends GetxController {
@@ -46,18 +47,25 @@ class AuthController extends GetxController {
   }
 
   Future<void> login() async {
+    if (isClosed) return;
+    
     errorMessage.value = '';
     final isValid = loginFormKey.currentState?.validate() ?? false;
     if (!isValid) {
       return;
     }
 
+    if (isClosed) return;
     final email = loginEmailCtrl.text.trim();
     final password = loginPasswordCtrl.text.trim();
 
     try {
+      if (isClosed) return;
       isLoading.value = true;
       final res = await authProvider.login(email, password);
+      
+      if (isClosed) return;
+      
       if (res['success'] == true) {
         final data = res['data'] as Map<String, dynamic>;
         final token = data['token'] as String?;
@@ -65,27 +73,93 @@ class AuthController extends GetxController {
 
         if (token != null) {
           await authService.setSession(token, user);
-          Get.offAllNamed(Routes.chaletList);
+          
+          if (isClosed) return;
+          
+          // Check if user can access mobile app (only customers)
+          if (user.canAccessMobileApp) {
+            // Check if there's a pending route to redirect to
+            final pendingRoute = authService.pendingRoute;
+            if (pendingRoute != null && pendingRoute.isNotEmpty) {
+              // Get the arguments if any (e.g., chalet for booking)
+              final args = Get.arguments;
+              authService.clearPendingRoute();
+              // Small delay to ensure session is fully set
+              await Future.delayed(const Duration(milliseconds: 100));
+              
+              // If pending route is profile or bookingList, navigate to main with correct index
+              if (pendingRoute == Routes.profile) {
+                Get.offAllNamed(Routes.main);
+                // Change to profile tab after navigation
+                Future.delayed(const Duration(milliseconds: 200), () {
+                  try {
+                    final mainController = Get.find<MainController>();
+                    mainController.changeIndex(2); // Profile index
+                  } catch (e) {
+                    Get.log('Error changing to profile tab: $e');
+                  }
+                });
+              } else if (pendingRoute == Routes.bookingList) {
+                Get.offAllNamed(Routes.main);
+                // Change to bookings tab after navigation
+                Future.delayed(const Duration(milliseconds: 200), () {
+                  try {
+                    final mainController = Get.find<MainController>();
+                    mainController.changeIndex(1); // Bookings index
+                  } catch (e) {
+                    Get.log('Error changing to bookings tab: $e');
+                  }
+                });
+              } else {
+                // Other routes (like booking start)
+                if (args != null) {
+                  Get.offAllNamed(pendingRoute, arguments: args);
+                } else {
+                  Get.offAllNamed(pendingRoute);
+                }
+              }
+            } else {
+              // No pending route, go to main page
+              Get.offAllNamed(Routes.main);
+            }
+          } else {
+            // Admin or Owner should use web panels
+            Get.snackbar(
+              'غير مصرح',
+              'هذا التطبيق مخصص للعملاء فقط. يرجى استخدام لوحة التحكم على الموقع.',
+              duration: const Duration(seconds: 4),
+            );
+            await authService.clearSession();
+          }
           return;
         }
       }
 
-      errorMessage.value = res['message']?.toString() ?? 'تعذر تسجيل الدخول';
+      if (!isClosed) {
+        errorMessage.value = res['message']?.toString() ?? 'تعذر تسجيل الدخول';
+      }
     } catch (e) {
       Get.log('Login error: $e');
-      errorMessage.value = 'حدث خطأ غير متوقع';
+      if (!isClosed) {
+        errorMessage.value = 'حدث خطأ غير متوقع';
+      }
     } finally {
-      isLoading.value = false;
+      if (!isClosed) {
+        isLoading.value = false;
+      }
     }
   }
 
   Future<void> register() async {
+    if (isClosed) return;
+    
     errorMessage.value = '';
     final isValid = registerFormKey.currentState?.validate() ?? false;
     if (!isValid) {
       return;
     }
 
+    if (isClosed) return;
     final Map<String, dynamic> payload = {
       'name': registerNameCtrl.text.trim(),
       'email': registerEmailCtrl.text.trim(),
@@ -99,8 +173,12 @@ class AuthController extends GetxController {
     try {
       payload.removeWhere((key, value) =>
           value == null || (value is String && value.trim().isEmpty));
+      
+      if (isClosed) return;
       isLoading.value = true;
       final res = await authProvider.register(payload);
+
+      if (isClosed) return;
 
       if (res['success'] == true) {
         final data = res['data'] as Map<String, dynamic>;
@@ -109,17 +187,82 @@ class AuthController extends GetxController {
 
         if (token != null) {
           await authService.setSession(token, user);
-          Get.offAllNamed(Routes.chaletList);
-          _resetRegisterForm();
+          
+          if (isClosed) return;
+          
+          // Check if user can access mobile app (only customers)
+          if (user.canAccessMobileApp) {
+            // Check if there's a pending route to redirect to
+            final pendingRoute = authService.pendingRoute;
+            if (pendingRoute != null && pendingRoute.isNotEmpty) {
+              // Get the arguments if any (e.g., chalet for booking)
+              final args = Get.arguments;
+              authService.clearPendingRoute();
+              // Small delay to ensure session is fully set
+              await Future.delayed(const Duration(milliseconds: 100));
+              
+              // If pending route is profile or bookingList, navigate to main with correct index
+              if (pendingRoute == Routes.profile) {
+                Get.offAllNamed(Routes.main);
+                // Change to profile tab after navigation
+                Future.delayed(const Duration(milliseconds: 200), () {
+                  try {
+                    final mainController = Get.find<MainController>();
+                    mainController.changeIndex(2); // Profile index
+                  } catch (e) {
+                    Get.log('Error changing to profile tab: $e');
+                  }
+                });
+              } else if (pendingRoute == Routes.bookingList) {
+                Get.offAllNamed(Routes.main);
+                // Change to bookings tab after navigation
+                Future.delayed(const Duration(milliseconds: 200), () {
+                  try {
+                    final mainController = Get.find<MainController>();
+                    mainController.changeIndex(1); // Bookings index
+                  } catch (e) {
+                    Get.log('Error changing to bookings tab: $e');
+                  }
+                });
+              } else {
+                // Other routes (like booking start)
+                if (args != null) {
+                  Get.offAllNamed(pendingRoute, arguments: args);
+                } else {
+                  Get.offAllNamed(pendingRoute);
+                }
+              }
+            } else {
+              // No pending route, go to main page
+              Get.offAllNamed(Routes.main);
+            }
+            if (!isClosed) {
+              _resetRegisterForm();
+            }
+          } else {
+            // Admin or Owner should use web panels
+            Get.snackbar(
+              'غير مصرح',
+              'هذا التطبيق مخصص للعملاء فقط. يرجى استخدام لوحة التحكم على الموقع.',
+              duration: const Duration(seconds: 4),
+            );
+            await authService.clearSession();
+          }
           return;
         }
       }
 
-      errorMessage.value = res['message']?.toString() ?? 'تعذر إنشاء الحساب';
+      if (!isClosed) {
+        errorMessage.value = res['message']?.toString() ?? 'تعذر إنشاء الحساب';
+      }
     } catch (e) {
-      errorMessage.value = 'حدث خطأ غير متوقع';
+      if (!isClosed) {
+        errorMessage.value = 'حدث خطأ غير متوقع';
+      }
     } finally {
-      isLoading.value = false;
+      if (!isClosed) {
+        isLoading.value = false;
+      }
     }
   }
 

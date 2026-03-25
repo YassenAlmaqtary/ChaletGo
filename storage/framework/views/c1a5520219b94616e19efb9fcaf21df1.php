@@ -40,7 +40,7 @@
             \Filament\Support\prepare_inherited_attributes($getExtraAttributeBag())
                 ->class(['fi-fo-select'])
         )]); ?>
-        <!--[if BLOCK]><![endif]--><?php if((! ($isSearchable() || $isMultiple()) && $isNative())): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if((! ($isSearchable() || $isMultiple()) && $isNative())): ?>
             <?php if (isset($component)) { $__componentOriginal97dc683fe4ff7acce9e296503563dd85 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal97dc683fe4ff7acce9e296503563dd85 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'filament::components.input.select','data' => ['autofocus' => $isAutofocused(),'disabled' => $isDisabled,'id' => $getId(),'inlinePrefix' => $isPrefixInline && (count($prefixActions) || $prefixIcon || filled($prefixLabel)),'inlineSuffix' => $isSuffixInline && (count($suffixActions) || $suffixIcon || filled($suffixLabel)),'required' => $isRequired() && (! $isConcealed()),'attributes' => 
@@ -65,48 +65,48 @@
                     $isHtmlAllowed = $isHtmlAllowed();
                 ?>
 
-                <!--[if BLOCK]><![endif]--><?php if($canSelectPlaceholder): ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($canSelectPlaceholder): ?>
                     <option value="">
-                        <!--[if BLOCK]><![endif]--><?php if(! $isDisabled): ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(! $isDisabled): ?>
                             <?php echo e($getPlaceholder()); ?>
 
-                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </option>
-                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $getOptions(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <!--[if BLOCK]><![endif]--><?php if(is_array($label)): ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $getOptions(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(is_array($label)): ?>
                         <optgroup label="<?php echo e($value); ?>">
-                            <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $label; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $groupedValue => $groupedLabel): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $label; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $groupedValue => $groupedLabel): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <option
                                     <?php if($isOptionDisabled($groupedValue, $groupedLabel)): echo 'disabled'; endif; ?>
                                     value="<?php echo e($groupedValue); ?>"
                                 >
-                                    <!--[if BLOCK]><![endif]--><?php if($isHtmlAllowed): ?>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isHtmlAllowed): ?>
                                         <?php echo $groupedLabel; ?>
 
                                     <?php else: ?>
                                         <?php echo e($groupedLabel); ?>
 
-                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </option>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </optgroup>
                     <?php else: ?>
                         <option
                             <?php if($isOptionDisabled($value, $label)): echo 'disabled'; endif; ?>
                             value="<?php echo e($value); ?>"
                         >
-                            <!--[if BLOCK]><![endif]--><?php if($isHtmlAllowed): ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isHtmlAllowed): ?>
                                 <?php echo $label; ?>
 
                             <?php else: ?>
                                 <?php echo e($label); ?>
 
-                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </option>
-                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
              <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal97dc683fe4ff7acce9e296503563dd85)): ?>
@@ -176,6 +176,9 @@
                             statePath: <?php echo \Illuminate\Support\Js::from($statePath)->toHtml() ?>,
                         })"
                 wire:ignore
+                wire:key="<?php echo e($this->getId()); ?>.<?php echo e($statePath); ?>.<?php echo e($field::class); ?>.<?php echo e(substr(md5(serialize([
+                        $isDisabled,
+                    ])), 0, 64)); ?>"
                 x-on:keydown.esc="select.dropdown.isActive && $event.stopPropagation()"
                 x-on:set-select-property="$event.detail.isDisabled ? select.disable() : select.enable()"
                 <?php echo e($attributes
@@ -199,7 +202,7 @@
 
                 ></select>
             </div>
-        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
      <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal505efd9768415fdb4543e8c564dad437)): ?>

@@ -2,49 +2,31 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../auth/controllers/auth_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../data/models/chalet_model.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/chalet_controller.dart';
 
 class ChaletListView extends StatelessWidget {
-  const ChaletListView({super.key});
+  final GlobalKey<ScaffoldState>? scaffoldKey;
+  
+  const ChaletListView({super.key, this.scaffoldKey});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ChaletController>();
-    final authController = Get.find<AuthController>();
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('الشاليهات'),
-        actions: [
-          _AppBarIconButton(
-            icon: Icons.receipt_long_outlined,
-            tooltip: 'حجوزاتي',
-            onTap: () => Get.toNamed(Routes.bookingList),
-          ),
-          _AppBarIconButton(
-            icon: Icons.person,
-            tooltip: 'الملف الشخصي',
-            onTap: () => Get.toNamed(Routes.profile),
-          ),
-          _AppBarIconButton(
-            icon: Icons.logout,
-            tooltip: 'تسجيل الخروج',
-            onTap: authController.logout,
-          ),
-          _AppBarIconButton(
-            icon: Icons.refresh,
-            tooltip: 'تحديث القائمة',
-            onTap: controller.fetchChalets,
-          ),
-        ],
+        title: Text('chalets'.tr),
+        leading: IconButton(
+          icon: const Icon(Icons.menu_rounded),
+          onPressed: () => scaffoldKey?.currentState?.openDrawer(),
+        ),
       ),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
+        decoration: BoxDecoration(gradient: AppColors.getBackgroundGradient(context)),
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,10 +37,10 @@ class ChaletListView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('اكتشف وجهتك المثالية',
+                    Text('discover_destination'.tr,
                         style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 6),
-                    Text('إقامات فاخرة مختارة بعناية لتجربة استثنائية',
+                    Text('luxury_accommodations'.tr,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.muted.withOpacity(0.8))),
                   ],
@@ -66,34 +48,70 @@ class ChaletListView extends StatelessWidget {
               ),
               Expanded(
                 child: Obx(() {
-                  if (controller.isLoading.value) {
+                  if (controller.isLoading.value && controller.chalets.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  if (controller.errorMessage.value.isNotEmpty) {
-                    return Center(child: Text(controller.errorMessage.value));
+                  if (controller.errorMessage.value.isNotEmpty &&
+                      controller.chalets.isEmpty) {
+                    return RefreshIndicator(
+                      onRefresh: controller.fetchChalets,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.6,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(controller.errorMessage.value),
+                                const SizedBox(height: 16),
+                                ElevatedButton(
+                                  onPressed: controller.fetchChalets,
+                                  child: Text('retry'.tr),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
                   }
 
                   if (controller.chalets.isEmpty) {
-                    return const Center(
-                        child: Text('لا توجد شاليهات متاحة حاليًا'));
+                    return RefreshIndicator(
+                      onRefresh: controller.fetchChalets,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.6,
+                          child: Center(
+                            child: Text('no_chalets'.tr),
+                          ),
+                        ),
+                      ),
+                    );
                   }
 
-                  return ListView.separated(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
-                    itemCount: controller.chalets.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 18),
-                    itemBuilder: (context, index) {
-                      final chalet = controller.chalets[index];
-                      return _ChaletCard(
-                        chalet: chalet,
-                        onTap: () => Get.toNamed(
-                          Routes.chaletDetail,
-                          arguments: chalet,
-                        ),
-                      );
-                    },
+                  return RefreshIndicator(
+                    onRefresh: controller.fetchChalets,
+                    child: ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      itemCount: controller.chalets.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 18),
+                      itemBuilder: (context, index) {
+                        final chalet = controller.chalets[index];
+                        return _ChaletCard(
+                          chalet: chalet,
+                          onTap: () => Get.toNamed(
+                            Routes.chaletDetail,
+                            arguments: chalet,
+                          ),
+                        );
+                      },
+                    ),
                   );
                 }),
               ),
@@ -120,7 +138,7 @@ class _ChaletCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          gradient: AppColors.cardGradient,
+          gradient: AppColors.getCardGradient(context),
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
@@ -150,7 +168,9 @@ class _ChaletCard extends StatelessWidget {
                         : Container(
                             width: 110,
                             height: 110,
-                            color: Colors.white.withOpacity(0.7),
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF2E2E2E).withOpacity(0.7)
+                                : Colors.white.withOpacity(0.7),
                             alignment: Alignment.center,
                             child: const Icon(Icons.image_outlined,
                                 size: 36, color: AppColors.primary),
@@ -190,21 +210,21 @@ class _ChaletCard extends StatelessWidget {
                         children: [
                           _InfoChip(
                             icon: Icons.group,
-                            label: '${chalet.maxGuests} ضيف',
+                            label: '${chalet.maxGuests} ${'guests'.tr}',
                           ),
                           const SizedBox(width: 8),
                           _InfoChip(
                             icon: Icons.bed_outlined,
-                            label: '${chalet.bedrooms} غرفة',
+                            label: '${chalet.bedrooms} ${'rooms'.tr}',
                           ),
                         ],
                       ),
                       const SizedBox(height: 14),
                       Text(
-                        '${chalet.pricePerNight.toStringAsFixed(0)} ر.ي / الليلة',
+                        '${chalet.pricePerNight.toStringAsFixed(0)} ${'price_per_night'.tr}',
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
-                          color: AppColors.dark,
+                          color: Theme.of(context).textTheme.titleMedium?.color ?? AppColors.dark,
                         ),
                       ),
                     ],
@@ -256,7 +276,9 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.85),
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF2E2E2E).withOpacity(0.85)
+            : Colors.white.withOpacity(0.85),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -300,7 +322,9 @@ class _AppBarIconButton extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.9),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF2E2E2E).withOpacity(0.9)
+                  : Colors.white.withOpacity(0.9),
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(

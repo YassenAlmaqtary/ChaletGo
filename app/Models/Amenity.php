@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Amenity extends Model
@@ -11,6 +12,7 @@ class Amenity extends Model
     use HasFactory;
 
     protected $fillable = [
+        'owner_id',
         'name',
         'icon',
         'category',
@@ -20,6 +22,14 @@ class Amenity extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Owner relationship
+     */
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
 
     /**
      * Chalets relationship

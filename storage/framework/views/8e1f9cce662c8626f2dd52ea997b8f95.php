@@ -127,11 +127,11 @@ unset($__defined_vars, $__key, $__value); ?>
     <?php echo e($form); ?>
 
 
-    <!--[if BLOCK]><![endif]--><?php if($applyAction->isVisible()): ?>
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($applyAction->isVisible()): ?>
         <div>
             <?php echo e($applyAction); ?>
 
         </div>
-    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 </div>
 <?php /**PATH D:\ChaletGo\vendor\filament\tables\resources\views/components/filters/index.blade.php ENDPATH**/ ?>

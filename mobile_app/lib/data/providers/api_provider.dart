@@ -13,7 +13,24 @@ class ApiProvider {
       final res = await dioClient.get(path, queryParameters: params);
       return _castResponse(res);
     } on DioException catch (e) {
-      throw _wrapError(e);
+      // If response has error data, return it as a map instead of throwing
+      if (e.response != null && e.response!.data is Map<String, dynamic>) {
+        final errorData = e.response!.data as Map<String, dynamic>;
+        return {
+          'success': false,
+          'message': errorData['message']?.toString() ?? _getErrorMessage(e),
+          'errors': errorData['errors'],
+        };
+      }
+      return {
+        'success': false,
+        'message': _getErrorMessage(e),
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'message': e.toString(),
+      };
     }
   }
 
@@ -23,8 +40,35 @@ class ApiProvider {
       final res = await dioClient.post(path, data: body);
       return _castResponse(res);
     } on DioException catch (e) {
-      throw _wrapError(e);
+      // If response has error data, return it as a map instead of throwing
+      if (e.response != null && e.response!.data is Map<String, dynamic>) {
+        final errorData = e.response!.data as Map<String, dynamic>;
+        // Return error response in the same format as success response
+        return {
+          'success': false,
+          'message': errorData['message']?.toString() ?? _getErrorMessage(e),
+          'errors': errorData['errors'],
+        };
+      }
+      // For other errors, return error map
+      return {
+        'success': false,
+        'message': _getErrorMessage(e),
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'message': e.toString(),
+      };
     }
+  }
+
+  String _getErrorMessage(DioException e) {
+    final data = e.response?.data;
+    if (data is Map<String, dynamic>) {
+      return data['message']?.toString() ?? e.message ?? 'خطأ في الاتصال';
+    }
+    return e.message ?? 'خطأ في الاتصال';
   }
 
   Future<Map<String, dynamic>> put(
@@ -33,7 +77,24 @@ class ApiProvider {
       final res = await dioClient.put(path, data: body);
       return _castResponse(res);
     } on DioException catch (e) {
-      throw _wrapError(e);
+      // If response has error data, return it as a map instead of throwing
+      if (e.response != null && e.response!.data is Map<String, dynamic>) {
+        final errorData = e.response!.data as Map<String, dynamic>;
+        return {
+          'success': false,
+          'message': errorData['message']?.toString() ?? _getErrorMessage(e),
+          'errors': errorData['errors'],
+        };
+      }
+      return {
+        'success': false,
+        'message': _getErrorMessage(e),
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'message': e.toString(),
+      };
     }
   }
 
