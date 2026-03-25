@@ -23,6 +23,10 @@ import '../modules/settings/views/settings_view.dart';
 import '../modules/help/views/help_view.dart';
 import '../modules/about/views/about_view.dart';
 import '../core/middleware/auth_middleware.dart';
+import '../modules/chat/views/chatbot_view.dart';
+import '../modules/chat/controllers/chatbot_controller.dart';
+import '../data/providers/chat_provider.dart';
+import '../data/providers/api_provider.dart';
 
 part 'app_routes.dart';
 
@@ -151,6 +155,15 @@ class AppPages {
       page: () => const AboutView(),
       transition: Transition.rightToLeft,
       transitionDuration: const Duration(milliseconds: 300),
+    ),
+    GetPage(
+      name: Routes.chatbot,
+      page: () => const ChatbotView(),
+      transition: Transition.rightToLeftWithFade,
+      transitionDuration: const Duration(milliseconds: 300),
+      binding: BindingsBuilder(() {
+        Get.put(ChatbotController(ChatProvider(Get.find<ApiProvider>())));
+      }),
     ),
   ];
 }
