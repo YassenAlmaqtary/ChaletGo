@@ -7,6 +7,7 @@ use App\Models\Booking;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Notifications\Notification;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -206,6 +207,66 @@ class BookingResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label('عرض'),
+                Tables\Actions\Action::make('confirm')
+                    ->label('تأكيد')
+                    ->tooltip('تأكيد الحجز')
+                    ->icon('heroicon-o-check-circle')
+                    ->iconButton()
+                    ->color('success')
+                    ->visible(fn (Booking $record): bool => $record->status === Booking::STATUS_PENDING)
+                    ->requiresConfirmation()
+                    ->modalHeading('تأكيد الحجز')
+                    ->modalDescription('هل تريد تأكيد هذا الحجز؟')
+                    ->modalSubmitActionLabel('تأكيد')
+                    ->action(function (Booking $record): void {
+                        if ($record->status !== Booking::STATUS_PENDING) {
+                            return;
+                        }
+                        $record->update(['status' => Booking::STATUS_CONFIRMED]);
+                        Notification::make()
+                            ->title('تم تأكيد الحجز')
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\Action::make('cancelBooking')
+                    ->label('إلغاء')
+                    ->tooltip('إلغاء الحجز')
+                    ->icon('heroicon-o-x-circle')
+                    ->iconButton()
+                    ->color('danger')
+                    ->visible(fn (Booking $record): bool => $record->canBeCancelled())
+                    ->form([
+                        Forms\Components\Textarea::make('cancellation_reason')
+                            ->label('سبب الإلغاء')
+                            ->required()
+                            ->maxLength(500)
+                            ->rows(3),
+                    ])
+                    ->modalHeading('إلغاء الحجز')
+                    ->modalSubmitActionLabel('إلغاء الحجز')
+                    ->action(function (array $data, Booking $record): void {
+                        if (! $record->canBeCancelled()) {
+                            return;
+                        }
+                        $details = $record->booking_details ?? [];
+                        $details['cancellation_reason'] = $data['cancellation_reason'];
+                        $details['cancelled_by'] = Auth::user()?->name ?? 'المالك';
+                        $details['cancelled_at'] = now()->format('Y-m-d H:i:s');
+                        $record->update([
+                            'status' => Booking::STATUS_CANCELLED,
+                            'booking_details' => $details,
+                        ]);
+                        Notification::make()
+                            ->title('تم إلغاء الحجز')
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\Action::make('add_payment')
+                    ->label('إضافة دفعة')
+                    ->icon('heroicon-o-credit-card')
+                    ->color('success')
+                    ->url(fn (Booking $record) => route('filament.owner.resources.payments.create', ['booking_id' => $record->id]))
+                    ->visible(fn (Booking $record): bool => $record->status === Booking::STATUS_CONFIRMED && ! $record->isPaid()),
                 Tables\Actions\EditAction::make()
                     ->label('تعديل')
                     ->visible(fn ($record) => $record->status !== 'cancelled' && $record->status !== 'completed'),

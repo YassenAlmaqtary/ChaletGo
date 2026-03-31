@@ -4,8 +4,11 @@ namespace App\Filament\Owner\Resources;
 
 use App\Filament\Owner\Resources\PaymentResource\Pages;
 use App\Models\Payment;
+use App\Models\Booking;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -59,7 +62,7 @@ class PaymentResource extends Resource
 
     public static function canCreate(): bool
     {
-        return false; // المدفوعات تُنشأ تلقائياً من النظام
+        return true;
     }
 
     public static function form(Form $form): Form
@@ -68,15 +71,45 @@ class PaymentResource extends Resource
             ->schema([
                 Forms\Components\Section::make('معلومات المدفوعة')
                     ->schema([
+                        Forms\Components\Select::make('booking_id')
+                            ->label('الحجز')
+                            ->relationship(
+                                'booking',
+                                'booking_number',
+                                fn (Builder $query) => $query->whereHas(
+                                    'chalet',
+                                    fn (Builder $q) => $q->where('owner_id', Auth::id())
+                                )
+                            )
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function ($state, Set $set): void {
+                                if (! $state) {
+                                    return;
+                                }
+                                $booking = Booking::query()->find((int) $state);
+                                if ($booking) {
+                                    $set('amount', $booking->final_amount);
+                                }
+                            })
+                            ->disabled(fn () => filled(request()->query('booking_id')))
+                            ->dehydrated(true)
+                            ->visibleOn('create')
+                            ->columnSpanFull(),
                         Forms\Components\Placeholder::make('booking_number')
                             ->label('رقم الحجز')
-                            ->content(fn (?Payment $record) => $record?->booking?->booking_number ?? 'غير محدد'),
+                            ->content(fn (?Payment $record) => $record?->booking?->booking_number ?? 'غير محدد')
+                            ->visibleOn('edit'),
                         Forms\Components\Placeholder::make('chalet_name')
                             ->label('الشاليه')
-                            ->content(fn (?Payment $record) => $record?->booking?->chalet?->name ?? 'غير محدد'),
+                            ->content(fn (?Payment $record) => $record?->booking?->chalet?->name ?? 'غير محدد')
+                            ->visibleOn('edit'),
                         Forms\Components\Placeholder::make('customer_name')
                             ->label('العميل')
-                            ->content(fn (?Payment $record) => $record?->booking?->customer?->name ?? 'غير محدد'),
+                            ->content(fn (?Payment $record) => $record?->booking?->customer?->name ?? 'غير محدد')
+                            ->visibleOn('edit'),
                     ])
                     ->columns(3),
 
@@ -90,15 +123,16 @@ class PaymentResource extends Resource
                                 'cash' => 'نقدي',
                                 'digital_wallet' => 'محفظة رقمية',
                             ])
+                            ->default('cash')
                             ->required()
                             ->native(false)
-                            ->disabled(fn ($record) => $record !== null),
+                            ->disabled(fn (?Payment $record) => $record !== null),
                         Forms\Components\TextInput::make('amount')
                             ->label('المبلغ')
                             ->required()
                             ->numeric()
                             ->prefix('ريال')
-                            ->disabled(fn ($record) => $record !== null),
+                            ->disabled(fn (?Payment $record) => $record !== null),
                         Forms\Components\Select::make('status')
                             ->label('الحالة')
                             ->options([
@@ -107,19 +141,22 @@ class PaymentResource extends Resource
                                 'failed' => 'فاشل',
                                 'refunded' => 'مسترد',
                             ])
+                            ->default('completed')
                             ->required()
                             ->native(false),
                         Forms\Components\TextInput::make('transaction_id')
                             ->label('رقم المعاملة')
                             ->maxLength(255)
-                            ->disabled(fn ($record) => $record !== null),
+                            ->placeholder('يُولَّد تلقائياً إن تُرك فارغاً')
+                            ->disabled(fn (?Payment $record) => $record !== null),
                         Forms\Components\Textarea::make('payment_details')
                             ->label('تفاصيل الدفع')
                             ->columnSpanFull()
-                            ->disabled(fn ($record) => $record !== null),
+                            ->disabled(fn (?Payment $record) => $record !== null),
                         Forms\Components\DateTimePicker::make('paid_at')
                             ->label('تاريخ الدفع')
-                            ->disabled(fn ($record) => $record !== null),
+                            ->default(now())
+                            ->disabled(fn (?Payment $record) => $record !== null),
                     ])->columns(2),
             ]);
     }
@@ -238,7 +275,23 @@ class PaymentResource extends Resource
                     ->label('عرض'),
                 Tables\Actions\EditAction::make()
                     ->label('تعديل')
-                    ->visible(fn ($record) => $record->status !== 'completed' && $record->status !== 'refunded'),
+                    ->visible(fn (Payment $record) => $record->status !== 'completed' && $record->status !== 'refunded'),
+                Tables\Actions\Action::make('refund')
+                    ->label('استرداد')
+                    ->icon('heroicon-o-arrow-uturn-left')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->modalHeading('استرداد المدفوعة')
+                    ->modalDescription('هل أنت متأكد من استرداد هذه المدفوعة؟')
+                    ->modalSubmitActionLabel('استرداد')
+                    ->visible(fn (Payment $record) => $record->status === 'completed')
+                    ->action(function (Payment $record): void {
+                        $record->update(['status' => 'refunded']);
+                        Notification::make()
+                            ->title('تم استرداد المدفوعة')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->defaultSort('created_at', 'desc');
     }
@@ -247,6 +300,7 @@ class PaymentResource extends Resource
     {
         return [
             'index' => Pages\ListPayments::route('/'),
+            'create' => Pages\CreatePayment::route('/create'),
             'view' => Pages\ViewPayment::route('/{record}'),
             'edit' => Pages\EditPayment::route('/{record}/edit'),
         ];

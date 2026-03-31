@@ -28,7 +28,9 @@ class PaymentResource extends Resource
                     ->relationship('booking', 'booking_number')
                     ->searchable()
                     ->preload()
-                    ->required(),
+                    ->required()
+                    ->disabled(fn (?Payment $record) => $record === null && filled(request()->query('booking_id')))
+                    ->dehydrated(true),
                 Forms\Components\Select::make('payment_method')
                     ->label('طريقة الدفع')
                     ->options([

@@ -1,3 +1,5 @@
+import 'chalet_amenity_model.dart';
+
 class ChaletModel {
   final int id;
   final String name;
@@ -11,6 +13,7 @@ class ChaletModel {
   final double rating;
   final int totalReviews;
   final List<String> images;
+  final List<ChaletAmenityModel> amenities;
 
   ChaletModel({
     required this.id,
@@ -25,10 +28,12 @@ class ChaletModel {
     required this.rating,
     required this.totalReviews,
     required this.images,
+    this.amenities = const [],
   });
 
   factory ChaletModel.fromJson(Map<String, dynamic> json) {
     final imagesData = json['images'] as List<dynamic>? ?? [];
+    final amenitiesData = json['amenities'] as List<dynamic>? ?? [];
     return ChaletModel(
       id: json['id'] as int,
       name: json['name'] as String? ?? '',
@@ -44,6 +49,10 @@ class ChaletModel {
       images: imagesData
           .map((e) => (e as Map<String, dynamic>)['url'] as String? ?? '')
           .where((url) => url.isNotEmpty)
+          .toList(),
+      amenities: amenitiesData
+          .map((e) =>
+              ChaletAmenityModel.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }

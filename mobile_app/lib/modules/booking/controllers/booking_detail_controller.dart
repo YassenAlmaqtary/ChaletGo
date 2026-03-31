@@ -56,10 +56,30 @@ class BookingDetailController extends GetxController {
     if (data == null) return false;
     if (data.review != null) return false;
     final status = data.status;
-    final checkOut = data.checkOutDate;
+    if (status == 'completed') return true;
+    if (status != 'confirmed') return false;
     final now = DateTime.now();
-    return status == 'completed' ||
-        (status == 'confirmed' && !checkOut.isAfter(now));
+    final today = DateTime(now.year, now.month, now.day);
+    final out = data.checkOutDate;
+    final checkOutDay = DateTime(out.year, out.month, out.day);
+    return !checkOutDay.isAfter(today);
+  }
+
+  /// When the user cannot add a review yet (no existing review), explain why.
+  String? get reviewUnavailableHint {
+    final data = current;
+    if (data == null || data.review != null || canReview) return null;
+    switch (data.status) {
+      case 'pending':
+        return 'بعد موافقة مالك الشاليه على الحجز وانتهاء الإقامة يمكنك تقييم الشاليه من هنا.';
+      case 'cancelled':
+        return 'لا يمكن تقييم حجز ملغى.';
+      case 'confirmed':
+        final d = DateFormat('dd/MM/yyyy').format(data.checkOutDate);
+        return 'يُتاح إضافة التقييم اعتباراً من تاريخ المغادرة ($d).';
+      default:
+        return 'التقييم غير متاح لهذا الحجز حالياً.';
+    }
   }
 
   List<PaymentModel> get payments => current?.payments ?? const [];

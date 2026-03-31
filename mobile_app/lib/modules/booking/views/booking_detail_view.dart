@@ -158,10 +158,10 @@ class BookingDetailView extends StatelessWidget {
                     const SizedBox(height: 24),
                     _PriceSummary(booking: booking),
                     const SizedBox(height: 24),
+                    _ReviewSection(controller: controller),
+                    const SizedBox(height: 24),
                     if (controller.canCancel)
                       _CancelButton(controller: controller),
-                    const SizedBox(height: 24),
-                    _ReviewSection(controller: controller),
                   ],
                 );
               }),
@@ -525,7 +525,47 @@ class _ReviewSection extends StatelessWidget {
       }
 
       if (!controller.canReview) {
-        return const SizedBox.shrink();
+        final hint = controller.reviewUnavailableHint;
+        if (hint == null) {
+          return const SizedBox.shrink();
+        }
+        return Card(
+          margin: EdgeInsets.zero,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.rate_review_outlined,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'التقييم',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        hint,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              height: 1.4,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
       }
 
       return Card(
