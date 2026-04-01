@@ -8,6 +8,14 @@ use Illuminate\Contracts\Validation\Validator;
 
 class RegisterRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        // Mobile app registers customers by default.
+        if (! $this->filled('user_type')) {
+            $this->merge(['user_type' => 'customer']);
+        }
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -28,7 +36,7 @@ class RegisterRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:20',
-            'user_type' => 'required|in:customer,owner',
+            'user_type' => 'nullable|in:customer,owner',
         ];
     }
 
@@ -49,7 +57,6 @@ class RegisterRequest extends FormRequest
             'password.confirmed' => 'تأكيد كلمة المرور غير متطابق',
             'phone.string' => 'رقم الهاتف يجب أن يكون نص',
             'phone.max' => 'رقم الهاتف يجب ألا يزيد عن 20 رقم',
-            'user_type.required' => 'نوع المستخدم مطلوب',
             'user_type.in' => 'نوع المستخدم غير صحيح',
         ];
     }

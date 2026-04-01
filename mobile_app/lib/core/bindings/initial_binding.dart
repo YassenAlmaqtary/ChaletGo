@@ -47,3 +47,4 @@ class InitialBinding extends Bindings {
     // Language and Theme controllers are already initialized in main.dart
   }
 }
+    
