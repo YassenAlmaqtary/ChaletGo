@@ -15,6 +15,8 @@ class ChaletListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ChaletController>();
+    final screenW = MediaQuery.of(context).size.width;
+    final horizontalPadding = screenW < 360 ? 14.0 : (screenW < 420 ? 18.0 : 24.0);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -33,7 +35,7 @@ class ChaletListView extends StatelessWidget {
             children: [
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -41,8 +43,7 @@ class ChaletListView extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 6),
                     Text('luxury_accommodations'.tr,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.muted.withOpacity(0.8))),
+                        style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
               ),
@@ -97,8 +98,8 @@ class ChaletListView extends StatelessWidget {
                     onRefresh: controller.fetchChalets,
                     child: ListView.separated(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: horizontalPadding, vertical: 12),
                       itemCount: controller.chalets.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 18),
                       itemBuilder: (context, index) {
@@ -148,89 +149,98 @@ class _ChaletCard extends StatelessWidget {
             ),
           ],
         ),
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(16),
         child: Stack(
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Hero(
-                  tag: 'chalet-image-${chalet.id}',
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(18),
-                    child: image != null
-                        ? CachedNetworkImage(
-                            imageUrl: image,
-                            width: 110,
-                            height: 110,
-                            fit: BoxFit.cover,
-                          )
-                        : Container(
-                            width: 110,
-                            height: 110,
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? const Color(0xFF2E2E2E).withOpacity(0.7)
-                                : Colors.white.withOpacity(0.7),
-                            alignment: Alignment.center,
-                            child: const Icon(Icons.image_outlined,
-                                size: 36, color: AppColors.primary),
-                          ),
-                  ),
-                ),
-                const SizedBox(width: 18),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        chalet.name,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final w = constraints.maxWidth;
+                final imageSize = (w * 0.28).clamp(84.0, 112.0);
+
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Hero(
+                      tag: 'chalet-image-${chalet.id}',
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(18),
+                        child: image != null
+                            ? CachedNetworkImage(
+                                imageUrl: image,
+                                width: imageSize,
+                                height: imageSize,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(
+                                width: imageSize,
+                                height: imageSize,
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? const Color(0xFF2E2E2E).withOpacity(0.7)
+                                    : Colors.white.withOpacity(0.7),
+                                alignment: Alignment.center,
+                                child: const Icon(Icons.image_outlined,
+                                    size: 36, color: AppColors.primary),
+                              ),
                       ),
-                      const SizedBox(height: 6),
-                      Row(
+                    ),
+                    SizedBox(width: w < 360 ? 12 : 16),
+                    Expanded(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.location_on_outlined,
-                              size: 16, color: AppColors.primary),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              chalet.location,
-                              style: theme.textTheme.bodySmall,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                          Text(
+                            chalet.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(Icons.location_on_outlined,
+                                  size: 16, color: AppColors.primary),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  chalet.location,
+                                  style: theme.textTheme.bodySmall,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              _InfoChip(
+                                icon: Icons.group,
+                                label: '${chalet.maxGuests} ${'guests'.tr}',
+                              ),
+                              _InfoChip(
+                                icon: Icons.bed_outlined,
+                                label: '${chalet.bedrooms} ${'rooms'.tr}',
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            '${chalet.pricePerNight.toStringAsFixed(0)} ${'price_per_night'.tr}',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          _InfoChip(
-                            icon: Icons.group,
-                            label: '${chalet.maxGuests} ${'guests'.tr}',
-                          ),
-                          const SizedBox(width: 8),
-                          _InfoChip(
-                            icon: Icons.bed_outlined,
-                            label: '${chalet.bedrooms} ${'rooms'.tr}',
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 14),
-                      Text(
-                        '${chalet.pricePerNight.toStringAsFixed(0)} ${'price_per_night'.tr}',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: Theme.of(context).textTheme.titleMedium?.color ?? AppColors.dark,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                    ),
+                  ],
+                );
+              },
             ),
             Positioned(
               top: 0,

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/amenity_icon_data.dart';
+import '../../../data/models/chalet_amenity_model.dart';
 import '../controllers/chalet_detail_controller.dart';
 import '../../../routes/app_pages.dart';
 import '../../../core/services/auth_service.dart';
@@ -149,10 +151,7 @@ class ChaletDetailView extends StatelessWidget {
                                         'سعر الليلة',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .bodySmall
-                                            ?.copyWith(
-                                                color: AppColors.muted
-                                                    .withOpacity(0.7)),
+                                            .bodySmall,
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
@@ -162,7 +161,6 @@ class ChaletDetailView extends StatelessWidget {
                                             .titleMedium
                                             ?.copyWith(
                                               fontWeight: FontWeight.w700,
-                                              color: AppColors.dark,
                                             ),
                                       ),
                                     ],
@@ -212,6 +210,46 @@ class ChaletDetailView extends StatelessWidget {
                                 .bodyMedium
                                 ?.copyWith(height: 1.6),
                           ),
+                          const SizedBox(height: 24),
+                          Text(
+                            'المرافق',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 12),
+                          if (chalet.amenities.isEmpty)
+                            Text(
+                              'لا توجد مرافق مسجلة لهذا الشاليه',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(height: 1.6),
+                            )
+                          else
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                final w = constraints.maxWidth;
+                                final columns = w >= 400 ? 3 : 2;
+                                const spacing = 10.0;
+                                final tileW = (w - spacing * (columns - 1)) /
+                                    columns;
+                                final sorted = [...chalet.amenities]..sort(
+                                    (a, b) =>
+                                        a.name.compareTo(b.name),
+                                  );
+                                return Wrap(
+                                  spacing: spacing,
+                                  runSpacing: spacing,
+                                  children: sorted
+                                      .map(
+                                        (a) => SizedBox(
+                                          width: tileW,
+                                          child: _AmenityTile(amenity: a),
+                                        ),
+                                      )
+                                      .toList(),
+                                );
+                              },
+                            ),
                         ],
                       ),
                     ),
@@ -342,14 +380,48 @@ class _IconText extends StatelessWidget {
         Flexible(
           child: Text(
             text,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: AppColors.muted),
+            style: Theme.of(context).textTheme.bodySmall,
             overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AmenityTile extends StatelessWidget {
+  const _AmenityTile({required this.amenity});
+
+  final ChaletAmenityModel amenity;
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = amenityIconFromApiClass(amenity.icon);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF2E2E2E)
+            : AppColors.softBlue,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 22, color: AppColors.primary),
+          const SizedBox(height: 8),
+          Text(
+            amenity.name,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  height: 1.25,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -383,18 +455,14 @@ class _InfoBadge extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             label,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: AppColors.muted.withOpacity(0.8)),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 2),
           Text(
             value,
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium
-                ?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
           ),
         ],
       ),

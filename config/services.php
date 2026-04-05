@@ -69,4 +69,19 @@ return [
         'webhook_secret' => env('STC_PAY_WEBHOOK_SECRET'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | RAG / Chatbot Service
+    |--------------------------------------------------------------------------
+    |
+    | FastAPI service that performs RAG retrieval and LLM calls.
+    | Laravel acts as the authenticated proxy for the mobile app.
+    |
+    */
+    'rag' => [
+        'base_url' => env('RAG_SERVICE_BASE_URL', 'http://127.0.0.1:9000'),
+        'proxy_secret' => env('RAG_PROXY_SECRET'),
+        'timeout_seconds' => (int) env('RAG_TIMEOUT_SECONDS', 30),
+    ],
+
 ];

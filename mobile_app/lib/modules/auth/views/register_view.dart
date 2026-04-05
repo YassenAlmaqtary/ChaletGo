@@ -53,23 +53,6 @@ class RegisterView extends StatelessWidget {
                         labelText: 'phone_optional'.tr),
                   ),
                   const SizedBox(height: 12),
-                  Obx(() => DropdownButtonFormField<String>(
-                        decoration:
-                            InputDecoration(labelText: 'user_type'.tr),
-                        value: controller.registerUserType.value,
-                        items: [
-                          DropdownMenuItem(
-                              value: 'customer', child: Text('customer'.tr)),
-                          DropdownMenuItem(
-                              value: 'owner', child: Text('owner'.tr)),
-                        ],
-                        onChanged: (value) {
-                          if (value != null) {
-                            controller.setRegisterUserType(value);
-                          }
-                        },
-                      )),
-                  const SizedBox(height: 12),
                   Obx(() => TextFormField(
                         controller: controller.registerPasswordCtrl,
                         obscureText: controller.registerObscure.value,

@@ -248,7 +248,19 @@ class BookingController extends GetxController {
         final data = response['data'] as Map<String, dynamic>?;
         if (data != null) {
           currentBooking.value = BookingModel.fromJson(data);
-          Get.toNamed(Routes.paymentMethod);
+          final status = currentBooking.value?.status ?? '';
+          if (status == 'pending') {
+            Get.snackbar(
+              'تم استلام طلب الحجز',
+              'سيتم تأكيد الحجز من قبل مالك الشاليه قريباً. يمكنك متابعة الحالة من حجوزاتي.',
+              snackPosition: SnackPosition.BOTTOM,
+              duration: const Duration(seconds: 4),
+            );
+            resetFlow();
+            Get.offAllNamed(Routes.main);
+          } else {
+            Get.toNamed(Routes.paymentMethod);
+          }
           return;
         }
       }

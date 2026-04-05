@@ -45,7 +45,7 @@ class AboutView extends StatelessWidget {
 
                 // App Name
                 const Text(
-                  'ChaletGo',
+                  'shaleio',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -87,7 +87,7 @@ class AboutView extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'ChaletGo هو تطبيق متخصص في حجز الشاليهات والإقامات الفاخرة. نوفر لك تجربة سهلة ومريحة للعثور على الشاليه المثالي لحجزك القادم.',
+                          'shaleio هو تطبيق متخصص في حجز الشاليهات والإقامات الفاخرة. نوفر لك تجربة سهلة ومريحة للعثور على الشاليه المثالي لحجزك القادم.',
                           style: TextStyle(
                             fontSize: 15,
                             height: 1.6,
@@ -135,7 +135,7 @@ class AboutView extends StatelessWidget {
 
                 // Copyright
                 Text(
-                  '© 2026 ChaletGo. جميع الحقوق محفوظة.',
+                  '© 2026 shaleio. جميع الحقوق محفوظة.',
                   style: TextStyle(
                     fontSize: 14,
                     color: AppColors.muted,

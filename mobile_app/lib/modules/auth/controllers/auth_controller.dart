@@ -168,7 +168,8 @@ class AuthController extends GetxController {
           : registerPhoneCtrl.text.trim(),
       'password': registerPasswordCtrl.text.trim(),
       'password_confirmation': registerPasswordConfirmCtrl.text.trim(),
-      'user_type': registerUserType.value,
+      // Mobile app registration is customer-only.
+      'user_type': 'customer',
     };
     try {
       payload.removeWhere((key, value) =>

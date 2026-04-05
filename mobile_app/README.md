@@ -1,6 +1,6 @@
-# ChaletGo Mobile App
+# shaleio Mobile App
 
-Flutter client for the ChaletGo platform built with GetX, Dio, and a modular MVC-inspired structure.
+Flutter client for the shaleio platform built with GetX, Dio, and a modular MVC-inspired structure.
 
 ## Prerequisites
 

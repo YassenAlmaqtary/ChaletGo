@@ -17,4 +17,5 @@ abstract class Routes {
   static const settings = '/settings';
   static const help = '/help';
   static const about = '/about';
+  static const chatbot = '/chatbot';
 }

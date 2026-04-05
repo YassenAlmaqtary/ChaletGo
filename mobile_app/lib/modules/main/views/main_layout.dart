@@ -258,6 +258,15 @@ class MainLayout extends StatelessWidget {
                   ),
                   _buildDrawerItem(
                     context,
+                    icon: Icons.smart_toy_outlined,
+                    title: 'المساعد',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Get.toNamed(Routes.chatbot);
+                    },
+                  ),
+                  _buildDrawerItem(
+                    context,
                     icon: Icons.info_outline_rounded,
                     title: 'about'.tr,
                     onTap: () {

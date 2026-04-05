@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controllers/booking_controller.dart';
+import '../../../routes/app_pages.dart';
 
 class PaymentMethodView extends StatelessWidget {
   const PaymentMethodView({super.key});
@@ -26,6 +27,20 @@ class PaymentMethodView extends StatelessWidget {
               ),
             ),
           );
+        }
+
+        if (booking.status == 'pending') {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Get.snackbar(
+              'بانتظار التأكيد',
+              'هذا الحجز بانتظار تأكيد مالك الشاليه، وسيظهر الدفع بعد التأكيد.',
+              snackPosition: SnackPosition.BOTTOM,
+              duration: const Duration(seconds: 4),
+            );
+            controller.resetFlow();
+            Get.offAllNamed(Routes.main);
+          });
+          return const SizedBox.shrink();
         }
 
         return SingleChildScrollView(

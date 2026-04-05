@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | This file contains security-related configuration options for the
-    | ChaletGo application.
+    | shaleio application.
     |
     */
 

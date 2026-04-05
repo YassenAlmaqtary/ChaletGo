@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() => GetMaterialApp(
-          title: 'ChaletGo',
+          title: 'shaleio',
           debugShowCheckedModeBanner: false,
           initialBinding: InitialBinding(),
           initialRoute: AppPages.initial,

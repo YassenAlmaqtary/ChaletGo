@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ChaletImageController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\WebhookController;
 use App\Http\Controllers\Api\RefundController;
+use App\Http\Controllers\Api\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,6 +72,11 @@ Route::middleware(['auth:api', 'customer.only'])->group(function () {
     Route::post('payments/{payment}/refund', [RefundController::class, 'processRefund']);
     Route::get('payments/{payment}/refunds', [RefundController::class, 'getRefunds']);
     Route::get('refund-policies', [RefundController::class, 'getRefundPolicies']);
+
+    // Chatbot (RAG) - public knowledge only
+    Route::post('chat', [ChatController::class, 'chat'])
+        ->name('chat.rag')
+        ->middleware(['rate.limit:20,1']);
 });
 
 // Owner/Admin API routes (separate from mobile app)
