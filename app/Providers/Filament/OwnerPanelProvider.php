@@ -29,7 +29,7 @@ class OwnerPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Green,
             ])
-            ->brandName('ChaletGo - لوحة مالك الشاليه')
+            ->brandName('shaleio - لوحة مالك الشاليه')
             ->favicon(asset('favicon.ico'))
             ->discoverResources(in: app_path('Filament/Owner/Resources'), for: 'App\\Filament\\Owner\\Resources')
             ->discoverPages(in: app_path('Filament/Owner/Pages'), for: 'App\\Filament\\Owner\\Pages')

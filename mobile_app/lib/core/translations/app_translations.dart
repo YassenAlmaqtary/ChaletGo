@@ -5,7 +5,7 @@ class AppTranslations extends Translations {
   Map<String, Map<String, String>> get keys => {
         'ar': {
           // Common
-          'app_name': 'ChaletGo',
+          'app_name': 'shaleio',
           'welcome': 'مرحباً',
           'loading': 'جاري التحميل...',
           'error': 'خطأ',
@@ -110,15 +110,15 @@ class AppTranslations extends Translations {
           'live_chat': 'الدردشة المباشرة',
           
           // About
-          'app_description': 'ChaletGo هو تطبيق متخصص في حجز الشاليهات والإقامات الفاخرة.',
+          'app_description': 'shaleio هو تطبيق متخصص في حجز الشاليهات والإقامات الفاخرة.',
           'features': 'المميزات',
-          'copyright': '© 2026 ChaletGo. جميع الحقوق محفوظة.',
+          'copyright': '© 2026 shaleio. جميع الحقوق محفوظة.',
           'undefined': 'غير محدد',
           'user': 'مستخدم',
         },
         'en': {
           // Common
-          'app_name': 'ChaletGo',
+          'app_name': 'shaleio',
           'welcome': 'Welcome',
           'loading': 'Loading...',
           'error': 'Error',
@@ -223,9 +223,9 @@ class AppTranslations extends Translations {
           'live_chat': 'Live Chat',
           
           // About
-          'app_description': 'ChaletGo is a specialized app for booking chalets and luxury accommodations.',
+          'app_description': 'shaleio is a specialized app for booking chalets and luxury accommodations.',
           'features': 'Features',
-          'copyright': '© 2026 ChaletGo. All rights reserved.',
+          'copyright': '© 2026 shaleio. All rights reserved.',
           'undefined': 'Undefined',
           'user': 'User',
         },
